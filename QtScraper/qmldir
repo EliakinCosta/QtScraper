@@ -1,0 +1,4 @@
+module com.ifba.edu.scraping
+plugin QtScraper
+classname WebScraper
+classname QWebScraperStatus
