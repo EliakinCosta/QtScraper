@@ -13,12 +13,14 @@ SOURCES += \
         qscrapengine.cpp \
         qtscraper_plugin.cpp \
         qwebscraper.cpp \
+        qwebscraperparser.cpp \
         qwebscraperstatus.cpp
 
 HEADERS += \
         qscrapengine.h \
         qtscraper_plugin.h \
         qwebscraper.h \
+        qwebscraperparser.h \
         qwebscraperstatus.h
 
 DISTFILES = qmldir
