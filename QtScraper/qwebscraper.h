@@ -9,6 +9,7 @@
 
 #include "qscrapengine.h"
 #include "qwebscraperstatus.h"
+#include "qwebscraperparser.h"
 
 class QWebScraper : public QObject
 {
