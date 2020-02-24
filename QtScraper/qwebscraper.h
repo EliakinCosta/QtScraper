@@ -10,8 +10,8 @@
 
 #include "qscrapengine.h"
 #include "qwebscraperstatus.h"
-#include "qwebscraperparser.h"
-#include "iqwebscraperparser.h"
+#include "iqwebscraperresponseparser.h"
+#include "qwebscraperresponseparser.h"
 
 class QWebScraper : public QObject
 {
@@ -43,7 +43,6 @@ private:
     QJsonArray m_actions;
     QString m_url;
     QScrapEngine m_scrapEngine;
-    QMap<QWebScraperParser::Type, IQWebScraperParser> m_parserClasses;
 };
 
 #endif // QWEBSCRAPER_H

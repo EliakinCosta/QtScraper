@@ -3,11 +3,11 @@
 
 #include <QObject>
 
-class QWebScraperParser : public QObject
+class QWebScraperResponseParser : public QObject
 {
     Q_OBJECT
 public:
-    explicit QWebScraperParser(QObject *parent = nullptr);
+    explicit QWebScraperResponseParser(QObject *parent = nullptr);
     enum Type {
         DefaultParser,
         TableParser

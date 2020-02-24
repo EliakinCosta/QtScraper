@@ -10,19 +10,19 @@ uri = com.ifba.edu.scraping
 
 # Input
 SOURCES += \
-        iqwebscraperparser.cpp \
+        iqwebscraperresponseparser.cpp \
         qscrapengine.cpp \
         qtscraper_plugin.cpp \
         qwebscraper.cpp \
-        qwebscraperparser.cpp \
+        qwebscraperresponseparser.cpp \
         qwebscraperstatus.cpp
 
 HEADERS += \
-        iqwebscraperparser.h \
+        iqwebscraperresponseparser.h \
         qscrapengine.h \
         qtscraper_plugin.h \
         qwebscraper.h \
-        qwebscraperparser.h \
+        qwebscraperresponseparser.h \
         qwebscraperstatus.h
 
 DISTFILES = qmldir

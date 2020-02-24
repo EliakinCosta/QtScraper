@@ -3,11 +3,11 @@
 
 #include <QObject>
 
-class IQWebScraperParser : public QObject
+class IQWebScraperReponseParser : public QObject
 {
     Q_OBJECT
 public:
-    explicit IQWebScraperParser(QObject *parent = nullptr);
+    explicit IQWebScraperReponseParser(QObject *parent = nullptr);
 
 signals:
 
