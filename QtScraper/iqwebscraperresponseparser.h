@@ -3,14 +3,14 @@
 
 #include <QObject>
 
+class QJsonArray;
+
 class IQWebScraperReponseParser : public QObject
 {
     Q_OBJECT
 public:
     explicit IQWebScraperReponseParser(QObject *parent = nullptr);
-
-signals:
-
+    virtual QJsonArray parse(QString response) = 0;
 };
 
 #endif // IQWEBSCRAPERPARSER_H
