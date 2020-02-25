@@ -53,43 +53,8 @@ QWebScraperStatus::Status QWebScraper::status() const
 
 void QWebScraper::scrap()
 {
-    m_scrapEngine.setBaseUrl(m_url);
-    foreach(QJsonValue jsonValue, m_actions)
-    {
-        QJsonObject jsonObject = jsonValue.toObject();
-        QString endpoint = jsonObject.value("endpoint").toString();
-        if (jsonObject.value("method").isString())
-        {
-            if(jsonObject.value("method").toString() == "GET")
-            {
-                if (jsonObject.value("scraps").isArray())
-                {
-                    QJsonArray scraps = jsonObject.value("scraps").toArray();
-                    foreach(QJsonValue scrap, scraps)
-                    {
-                        QJsonObject scrapObject = scrap.toObject();
-                        m_scrapEngine.addRequest(
-                                    "GET",
-                                    m_scrapEngine.evaluateStringToContext(endpoint),
-                                    m_scrapEngine.evaluateStringToContext(scrapObject.value("name").toString()),
-                                    m_scrapEngine.evaluateStringToContext(scrapObject.value("query").toString())
-                                    );
-                    }
-                }
-            } else {
-                if (jsonObject.value("data").isArray())
-                {
-                    QJsonArray postData = jsonObject.value("data").toArray();
-                    m_scrapEngine.addRequest(
-                        "POST",
-                        m_scrapEngine.evaluateStringToContext(endpoint),
-                        postData
-                    );
-                }
-            }
-        }
-
-    }
+    m_scrapEngine.setBaseUrl(m_url);    
+    m_scrapEngine.parseRequests(m_actions);
     m_scrapEngine.scrap();
 }
 

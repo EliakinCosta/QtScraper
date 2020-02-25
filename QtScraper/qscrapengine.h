@@ -9,6 +9,7 @@
 
 class QByteArray;
 class QNetworkReply;
+class QJsonArray;
 
 class ScrapReply : public QObject
 {
@@ -30,6 +31,7 @@ public:
     explicit QScrapEngine(QObject *parent = nullptr);
     virtual ~QScrapEngine();
     void scrap();
+    void parseRequests(QJsonArray &actions);
     void setBaseUrl(QString baseUrl);
     void addRequest(QString httpMethod, QString endpoint, QString var, QString query);
     void addRequest(QString httpMethod, QString endpoint, QJsonArray data);

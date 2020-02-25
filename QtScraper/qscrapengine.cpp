@@ -66,6 +66,45 @@ void QScrapEngine::tidyPayload(QString &payload)
     payload = QString::fromUtf8(reinterpret_cast<char*>(output.bp)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 }
 
+void QScrapEngine::parseRequests(QJsonArray &actions)
+{
+    foreach(QJsonValue jsonValue, actions)
+    {
+        QJsonObject jsonObject = jsonValue.toObject();
+        QString endpoint = jsonObject.value("endpoint").toString();
+        if (jsonObject.value("method").isString())
+        {
+            if(jsonObject.value("method").toString() == "GET")
+            {
+                if (jsonObject.value("scraps").isArray())
+                {
+                    QJsonArray scraps = jsonObject.value("scraps").toArray();
+                    foreach(QJsonValue scrap, scraps)
+                    {
+                        QJsonObject scrapObject = scrap.toObject();
+                        this->addRequest(
+                            "GET",
+                            this->evaluateStringToContext(endpoint),
+                            this->evaluateStringToContext(scrapObject.value("name").toString()),
+                            this->evaluateStringToContext(scrapObject.value("query").toString())
+                        );
+                    }
+                }
+            } else {
+                if (jsonObject.value("data").isArray())
+                {
+                    QJsonArray postData = jsonObject.value("data").toArray();
+                    this->addRequest(
+                        "POST",
+                        this->evaluateStringToContext(endpoint),
+                        postData
+                    );
+                }
+            }
+        }
+    }
+}
+
 
 void QScrapEngine::scrap()
 {
