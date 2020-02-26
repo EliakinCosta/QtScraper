@@ -18,9 +18,7 @@ public:
     virtual QJsonArray parse(QString response);
 private:
     QString m_name;
-    QString m_query;
-    QList<int> m_indexes;
-    QList<QString> m_headers;
+    QString m_query;    
 };
 
 #endif // DEFAULTRESPONSEPARSER_H

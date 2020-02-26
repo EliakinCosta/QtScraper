@@ -51,6 +51,7 @@ private:
     QNetworkReply *doHttpRequest(QHash<QString, QString> requestObj);
     QString fromByteArrayToString(QByteArray html);
     void saveToContext(QString key, QStringList value);
+    void saveToContext(QString key, QJsonArray jsonArray);
     QJsonObject objectFromString(const QString& in);
     IQWebScraperReponseParser *loadParser(QWebScraperResponseParser::Type, QJsonObject jsonObj);
 private:

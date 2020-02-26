@@ -6,8 +6,6 @@
 #include <QJsonObject>
 #include <QNetworkReply>
 #include <QTextCodec>
-#include <QXmlQuery>
-#include <QXmlResultItems>
 #include <QRegularExpression>
 #include <QStringLiteral>
 #include <QUrlQuery>
@@ -207,6 +205,11 @@ void QScrapEngine::saveToContext(QString key, QStringList value)
     QScrapEngine::CONTEXT.insert(key, QJsonArray::fromStringList(value));
 }
 
+void QScrapEngine::saveToContext(QString key, QJsonArray jsonArray)
+{
+    QScrapEngine::CONTEXT.insert(key, jsonArray);
+}
+
 QString QScrapEngine::evaluateStringToContext(QString value)
 {
     QString new_value = value;
@@ -300,18 +303,9 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
     qDebug() << "pAYLOAD:" << payload.mid(2000);
     qDebug() << "STATUS CODE:" << statusCode;
 
-    QXmlQuery xmlQuery;
-    QString result;
-    QStringList list;
-    xmlQuery.setFocus(payload);
-    xmlQuery.setQuery(requestObj.value("query"));
-    if (!xmlQuery.isValid()) {
-        return;
-    }
+    auto model = m_parsers[m_scheduleIndex]->parse(payload);
 
-    xmlQuery.evaluateTo(&list);
-
-    saveToContext(requestObj.value("name"), list);
+    saveToContext(requestObj.value("name"), model);
 
     m_scheduleIndex++;
     scrap();
