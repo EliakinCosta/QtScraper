@@ -6,6 +6,8 @@
 #include <QNetworkRequest>
 
 #include "qwebscraperstatus.h"
+#include "iqwebscraperresponseparser.h"
+#include "qwebscraperresponseparser.h"
 
 class QByteArray;
 class QNetworkReply;
@@ -50,10 +52,12 @@ private:
     QString fromByteArrayToString(QByteArray html);
     void saveToContext(QString key, QStringList value);
     QJsonObject objectFromString(const QString& in);
+    IQWebScraperReponseParser *loadParser(QWebScraperResponseParser::Type, QJsonObject jsonObj);
 private:
     QNetworkAccessManager m_manager;
     QNetworkRequest m_request;
     QList<QHash<QString, QString>> m_requestsSchedule;
+    QList<IQWebScraperReponseParser*> m_parsers;
     QString m_baseUrl;
     int m_scheduleIndex = 0;
     QWebScraperStatus::Status m_status;

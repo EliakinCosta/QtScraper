@@ -13,9 +13,6 @@ public:
         TableParser
     };
     Q_ENUM(Type)
-
-signals:
-
 };
 
 #endif // QWEBSCRAPERPARSER_H

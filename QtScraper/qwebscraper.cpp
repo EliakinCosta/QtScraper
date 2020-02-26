@@ -55,7 +55,7 @@ void QWebScraper::scrap()
 {
     m_scrapEngine.setBaseUrl(m_url);    
     m_scrapEngine.parseRequests(m_actions);
-    m_scrapEngine.scrap();
+//    m_scrapEngine.scrap();
 }
 
 void QWebScraper::saveToContext()

@@ -12,6 +12,7 @@ uri = com.ifba.edu.scraping
 SOURCES += \
         defaultresponseparser.cpp \
         iqwebscraperresponseparser.cpp \
+        parserprototype.cpp \
         qscrapengine.cpp \
         qtscraper_plugin.cpp \
         qwebscraper.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
 HEADERS += \
         defaultresponseparser.h \
         iqwebscraperresponseparser.h \
+        parserprototype.h \
         qscrapengine.h \
         qtscraper_plugin.h \
         qwebscraper.h \

@@ -16,6 +16,7 @@
 #include <tidybuffio.h>
 
 #include "qwebscraperstatus.h"
+#include "parserprototype.h"
 
 
 QJsonObject QScrapEngine::CONTEXT;
@@ -47,6 +48,7 @@ QScrapEngine::QScrapEngine(QObject *parent) : QObject(parent)
 
 QScrapEngine::~QScrapEngine()
 {
+    qDeleteAll(m_parsers);
 }
 
 void QScrapEngine::tidyPayload(QString &payload)
@@ -66,8 +68,14 @@ void QScrapEngine::tidyPayload(QString &payload)
     payload = QString::fromUtf8(reinterpret_cast<char*>(output.bp)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 }
 
+IQWebScraperReponseParser *QScrapEngine::loadParser(QWebScraperResponseParser::Type type, QJsonObject jsonObj)
+{
+    return dynamic_cast<IQWebScraperReponseParser*>(ParserPrototype::create(type, jsonObj));
+}
+
 void QScrapEngine::parseRequests(QJsonArray &actions)
 {
+    ParserPrototype::initialize();
     foreach(QJsonValue jsonValue, actions)
     {
         QJsonObject jsonObject = jsonValue.toObject();
@@ -82,6 +90,9 @@ void QScrapEngine::parseRequests(QJsonArray &actions)
                     foreach(QJsonValue scrap, scraps)
                     {
                         QJsonObject scrapObject = scrap.toObject();
+                        QWebScraperResponseParser::Type type = QWebScraperResponseParser::Type(scrapObject.value("responseParser").toInt());
+                        IQWebScraperReponseParser *parser = loadParser(type, scrapObject);
+                        m_parsers.append(parser);
                         this->addRequest(
                             "GET",
                             this->evaluateStringToContext(endpoint),
