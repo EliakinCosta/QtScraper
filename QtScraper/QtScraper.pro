@@ -17,7 +17,8 @@ SOURCES += \
         qtscraper_plugin.cpp \
         qwebscraper.cpp \
         qwebscraperresponseparser.cpp \
-        qwebscraperstatus.cpp
+        qwebscraperstatus.cpp \
+        tableresponseparser.cpp
 
 HEADERS += \
         defaultresponseparser.h \
@@ -27,7 +28,8 @@ HEADERS += \
         qtscraper_plugin.h \
         qwebscraper.h \
         qwebscraperresponseparser.h \
-        qwebscraperstatus.h
+        qwebscraperstatus.h \
+        tableresponseparser.h
 
 DISTFILES = qmldir
 
