@@ -15,27 +15,20 @@ Item {
             {
                 "endpoint": "https://www.fifaindex.com/players/top/",
                 "method": "GET",
-                "scraps": [
+                "scraps": [                    
                     {
-                        "name": "title",
-                        "query": "/html/head/title/string()"
-                    },
-                    {
-                        "name": "names",
-                        "query": "/html/body/main/div/div[2]/div[2]/div[2]/table/tbody/tr/td[4]/a/@title/string()"
-                    },
-                    {
-                        "name": "overalls",
-                        "query": "/html/body/main/div/div[2]/div[2]/div[2]/table/tbody/tr/td[3]/span[1]/string()"
+                        "name": "topPlayers",
+                        "query": "/html/body/main/div/div[2]/div[2]/div[2]/table/tbody/tr/td[$index]/a/@title/string()",
+                        "indexes": [4, 8],
+                        "headers": ["name", "team"],
+                        "responseParser": QWebScraperResponseParser.TableParser
                     }
                 ]
             }
         ]
         onStatusChanged: {
             if (scraper.status === QWebScraperStatus.Ready) {
-                var names = scraper.ctx.names;
-                var overalls = scraper.ctx.overalls;
-                topPlayers = arrays_as_objects(names, overalls);
+                var topPlayers = ctx["topPlayers"]
             }
         }
     }
@@ -45,7 +38,7 @@ Item {
         model: topPlayers
 
         delegate: ItemDelegate {
-            text: modelData.name + " - " + modelData.overall
+            text: modelData.name + " - " + modelData.team
             width: parent.width
         }
 
@@ -65,17 +58,5 @@ Item {
         height: 150
         anchors.centerIn: parent
         running: scraper.status === QWebScraperStatus.Loading
-    }
-
-    function arrays_as_objects(array1, array2) {
-        var final_array = [];
-
-        for (var index=0; index<array1.length; index++) {
-            var obj = {};
-            obj["name"] = array1[index];
-            obj["overall"] = array2[index];
-            final_array.push(obj);
-        }
-        return final_array;
-    }
+    }    
 }
