@@ -46,7 +46,7 @@ QScrapEngine::QScrapEngine(QObject *parent) : QObject(parent)
 
 QScrapEngine::~QScrapEngine()
 {
-    qDeleteAll(m_parsers);
+//    qDeleteAll(m_parsers);
 }
 
 void QScrapEngine::tidyPayload(QString &payload)

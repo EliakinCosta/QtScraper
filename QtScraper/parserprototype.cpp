@@ -4,6 +4,7 @@
 
 #include "iqwebscraperresponseparser.h"
 #include "defaultresponseparser.h"
+#include "tableresponseparser.h"
 
 QMap<QWebScraperResponseParser::Type, ParserPrototype*> ParserPrototype::PROTOTYPES;
 
@@ -20,6 +21,7 @@ ParserPrototype::~ParserPrototype()
 void ParserPrototype::initialize()
 {
     PROTOTYPES.insert(QWebScraperResponseParser::DefaultParser, new DefaultResponseParser);
+    PROTOTYPES.insert(QWebScraperResponseParser::TableParser, new TableResponseParser);
 }
 
 ParserPrototype *ParserPrototype::create(QWebScraperResponseParser::Type type, QJsonObject jsonObj)
@@ -27,5 +29,5 @@ ParserPrototype *ParserPrototype::create(QWebScraperResponseParser::Type type, Q
     if(PROTOTYPES.contains(type))
     {
         return PROTOTYPES[type]->clone(jsonObj);
-    }
+    }    
 }
