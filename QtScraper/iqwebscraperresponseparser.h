@@ -12,6 +12,7 @@ public:
     explicit IQWebScraperReponseParser(QObject *parent = nullptr);
     virtual ~IQWebScraperReponseParser(){}
     virtual QJsonArray parse(QString response) = 0;
+    virtual QString name() = 0;
 };
 
 #endif // IQWEBSCRAPERPARSER_H
