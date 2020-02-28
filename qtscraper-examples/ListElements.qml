@@ -6,7 +6,7 @@ import com.ifba.edu.scraping 1.0
 Item {
     id: itemListElements
     anchors.fill: parent
-    property var topPlayers
+    property var topPlayers: []
 
     QWebScraper {
         id: scraper
@@ -28,28 +28,33 @@ Item {
         ]
         onStatusChanged: {
             if (scraper.status === QWebScraperStatus.Ready) {
-                var topPlayers = ctx["topPlayers"]
+                topPlayers = ctx["topPlayers"]
+                console.log(JSON.stringify(topPlayers));
             }
         }
     }
 
-    ListView {
-        anchors.fill: parent
-        model: topPlayers
+    Column {
+        spacing: 10
+        visible: !scraperIndicator.running
 
-        delegate: ItemDelegate {
-            text: modelData.name + " - " + modelData.team
-            width: parent.width
+        Button {
+            id: getTopPlayerButton
+            text: "Scrap"
+            onClicked: scraper.scrap()
         }
 
-        ScrollIndicator.vertical: ScrollIndicator { }
-    }
+        ListView {
+            id: listView
+            width: 180; height:  count > 0 ? contentHeight : 0
+            model: itemListElements.topPlayers
 
-    Button {
-        id: getTopPlayerButton
-        anchors.centerIn: parent
-        text: "Scrap"
-        onClicked: scraper.scrap()
+            delegate: ItemDelegate {
+                text: modelData.name + " - " + modelData.team
+            }
+
+            ScrollIndicator.vertical: ScrollIndicator { }
+        }
     }
 
     BusyIndicator {
