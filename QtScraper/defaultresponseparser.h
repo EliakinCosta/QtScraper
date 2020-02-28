@@ -16,6 +16,7 @@ public:
     virtual ~DefaultResponseParser();
     virtual ParserPrototype *clone(QJsonObject jsonObject = {});
     virtual QJsonArray parse(QString response);
+    virtual QString name();
 private:
     QString m_name;
     QString m_query;    

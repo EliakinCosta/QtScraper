@@ -41,3 +41,8 @@ QJsonArray DefaultResponseParser::parse(QString response)
 
     return QJsonArray::fromStringList(list);
 }
+
+QString DefaultResponseParser::name()
+{
+    return m_name;
+}
