@@ -91,12 +91,7 @@ void QScrapEngine::parseRequests(QJsonArray &actions)
                         QWebScraperResponseParser::Type type = QWebScraperResponseParser::Type(scrapObject.value("responseParser").toInt());
                         IQWebScraperReponseParser *parser = loadParser(type, scrapObject);
                         m_parsers.append(parser);
-                        this->addRequest(
-                            "GET",
-                            this->evaluateStringToContext(endpoint),
-                            this->evaluateStringToContext(scrapObject.value("name").toString()),
-                            this->evaluateStringToContext(scrapObject.value("query").toString())
-                        );
+                        this->addRequest("GET", this->evaluateStringToContext(endpoint));
                     }
                 }
             } else {
@@ -131,14 +126,12 @@ void QScrapEngine::scrap()
     setStatus(QWebScraperStatus::Loading);
 }
 
-void QScrapEngine::addRequest(QString httpMethod, QString endpoint, QString var, QString query)
+void QScrapEngine::addRequest(QString httpMethod, QString endpoint)
 {
     QHash<QString, QString> hashObj;
 
     hashObj.insert("httpMethod", httpMethod);
-    hashObj.insert("endpoint", endpoint);
-    hashObj.insert("name", var);
-    hashObj.insert("query", query);
+    hashObj.insert("endpoint", endpoint);    
 
     m_requestsSchedule.append(hashObj);
 }
@@ -300,12 +293,10 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
     }
     QString payload {reply->readAll()}; // clazy:exclude=qt4-qstring-from-array
     tidyPayload(payload);
-    qDebug() << "pAYLOAD:" << payload.mid(2000);
-    qDebug() << "STATUS CODE:" << statusCode;
 
     auto model = m_parsers[m_scheduleIndex]->parse(payload);
 
-    saveToContext(requestObj.value("name"), model);
+    saveToContext(model.name(), model);
 
     m_scheduleIndex++;
     scrap();
