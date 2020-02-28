@@ -294,9 +294,10 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
     QString payload {reply->readAll()}; // clazy:exclude=qt4-qstring-from-array
     tidyPayload(payload);
 
-    auto model = m_parsers[m_scheduleIndex]->parse(payload);
+    auto parser = m_parsers[m_scheduleIndex];
+    auto model = parser->parse(payload);
 
-    saveToContext(model.name(), model);
+    saveToContext(parser->name(), model);
 
     m_scheduleIndex++;
     scrap();
