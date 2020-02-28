@@ -281,9 +281,7 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
         auto replyRedirect = doHttpRequest(hashObj);
 
         connect (replyRedirect, &QNetworkReply::finished, this, [=]() {
-            replyRedirect->deleteLater();
-
-            auto statusCode = replyRedirect->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            replyRedirect->deleteLater();            
 
             QString payload {replyRedirect->readAll()}; // clazy:exclude=qt4-qstring-from-array
             tidyPayload(payload);
