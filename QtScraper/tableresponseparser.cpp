@@ -78,3 +78,8 @@ QJsonArray TableResponseParser::parse(QString response)
 
     return resultArray;
 }
+
+QString TableResponseParser::name()
+{
+    return m_name;
+}
