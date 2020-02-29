@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>QueryParameters.qml</file>
         <file>ListElements.qml</file>
+        <file>Login.qml</file>
     </qresource>
 </RCC>
