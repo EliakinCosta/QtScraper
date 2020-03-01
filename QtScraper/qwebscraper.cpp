@@ -14,6 +14,7 @@ QWebScraper::QWebScraper(QObject *parent) :
     QObject{parent}
 {
     connect(&m_scrapEngine, &QScrapEngine::statusChanged, this, &QWebScraper::statusChanged);
+    connect(&m_scrapEngine, &QScrapEngine::ctxChanged, this, &QWebScraper::ctxChanged);
 }
 
 QWebScraper::~QWebScraper()

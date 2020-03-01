@@ -19,7 +19,7 @@ class QWebScraper : public QObject
 
     Q_PROPERTY(QJsonArray actions READ actions WRITE setActions)
     Q_PROPERTY(QString url READ url WRITE setUrl)
-    Q_PROPERTY(QJsonObject ctx READ ctx)
+    Q_PROPERTY(QJsonObject ctx READ ctx NOTIFY ctxChanged)
     Q_PROPERTY(QWebScraperStatus::Status status READ status NOTIFY statusChanged)
 public:
     explicit QWebScraper(QObject *parent = nullptr);
@@ -36,6 +36,7 @@ public:
 
 Q_SIGNALS:
     void statusChanged(QWebScraperStatus::Status);
+    void ctxChanged(QJsonObject);
 
 private:
     void saveToContext();

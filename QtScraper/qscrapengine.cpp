@@ -196,11 +196,13 @@ QString QScrapEngine::fromByteArrayToString(QByteArray html)
 void QScrapEngine::saveToContext(QString key, QStringList value)
 {
     QScrapEngine::CONTEXT.insert(key, QJsonArray::fromStringList(value));
+    Q_EMIT ctxChanged(QScrapEngine::CONTEXT);
 }
 
 void QScrapEngine::saveToContext(QString key, QJsonArray jsonArray)
 {
     QScrapEngine::CONTEXT.insert(key, jsonArray);
+    Q_EMIT ctxChanged(QScrapEngine::CONTEXT);
 }
 
 QString QScrapEngine::evaluateStringToContext(QString value)

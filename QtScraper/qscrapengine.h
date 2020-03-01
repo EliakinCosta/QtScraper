@@ -2,6 +2,7 @@
 #define QSCRAPENGINE_H
 
 #include <QObject>
+#include <QJsonObject>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 
@@ -47,6 +48,7 @@ public slots:
     void replyFinished(QNetworkReply *reply);
 Q_SIGNALS:
      void statusChanged(QWebScraperStatus::Status status);
+     void ctxChanged(QJsonObject jsonObject);
 private:
     QNetworkReply *doHttpRequest(QHash<QString, QString> requestObj);
     QString fromByteArrayToString(QByteArray html);
