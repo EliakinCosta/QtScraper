@@ -47,7 +47,7 @@ Item {
         ListView {
             id: listView
             width: 180; height:  count > 0 ? contentHeight : 0
-            model: itemListElements.topPlayers
+            model: scraper.ctx["topPlayers"]
 
             delegate: ItemDelegate {
                 text: modelData.name + " - " + modelData.team
