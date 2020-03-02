@@ -13,8 +13,7 @@ Item {
         url: "https://www.fifaindex.com/"
         actions: [
             {
-                "endpoint": "https://www.fifaindex.com/players/top/",
-                "method": "GET",
+                "endpoint": "https://www.fifaindex.com/players/top/",                
                 "scraps": [                    
                     {
                         "name": "topPlayers",
