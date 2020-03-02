@@ -79,44 +79,42 @@ void QScrapEngine::parseRequests(QJsonArray &actions)
     {
         QJsonObject jsonObject = jsonValue.toObject();
         QString endpoint = jsonObject.value("endpoint").toString();
-        if (jsonObject.value("method").isString())
+        QString method = jsonObject.value("method").toString("GET");
+        if(method == "GET")
         {
-            if(jsonObject.value("method").toString() == "GET")
+            if (jsonObject.value("scraps").isArray())
             {
-                if (jsonObject.value("scraps").isArray())
+                QJsonArray scraps = jsonObject.value("scraps").toArray();
+                foreach(QJsonValue scrap, scraps)
                 {
-                    QJsonArray scraps = jsonObject.value("scraps").toArray();
-                    foreach(QJsonValue scrap, scraps)
-                    {
-                        QJsonObject scrapObject = scrap.toObject();
-                        QWebScraperResponseParser::Type type = QWebScraperResponseParser::Type(scrapObject.value("responseParser").toInt());
-                        IQWebScraperReponseParser *parser = loadParser(type, scrapObject);
-                        HttpRequestModel requestObj(
-                            this->evaluateStringToContext(endpoint),
-                            "GET",
-                            jsonObject.value("headers").toObject()
-                        );
-
-                        this->addRequest(requestObj);
-                        m_parsers.append(parser);
-                    }
-                }
-            } else if(jsonObject.value("method").toString() == "POST"){
-                if (jsonObject.value("data").isArray())
-                {
-                    QJsonObject scrapObject;
-                    IQWebScraperReponseParser *parser = loadParser(QWebScraperResponseParser::DefaultParser, scrapObject);
-                    QJsonArray postData = jsonObject.value("data").toArray();
+                    QJsonObject scrapObject = scrap.toObject();
+                    QWebScraperResponseParser::Type type = QWebScraperResponseParser::Type(scrapObject.value("responseParser").toInt());
+                    IQWebScraperReponseParser *parser = loadParser(type, scrapObject);
                     HttpRequestModel requestObj(
                         this->evaluateStringToContext(endpoint),
-                        jsonObject.value("method").toString(),
-                        jsonObject.value("headers").toObject(),
-                        postData,
-                        jsonObject.value("validator").toObject()
+                        "GET",
+                        jsonObject.value("headers").toObject()
                     );
+
                     this->addRequest(requestObj);
                     m_parsers.append(parser);
                 }
+            }
+        } else if(method == "POST"){
+            if (jsonObject.value("data").isArray())
+            {
+                QJsonObject scrapObject;
+                IQWebScraperReponseParser *parser = loadParser(QWebScraperResponseParser::DefaultParser, scrapObject);
+                QJsonArray postData = jsonObject.value("data").toArray();
+                HttpRequestModel requestObj(
+                    this->evaluateStringToContext(endpoint),
+                    jsonObject.value("method").toString(),
+                    jsonObject.value("headers").toObject(),
+                    postData,
+                    jsonObject.value("validator").toObject()
+                );
+                this->addRequest(requestObj);
+                m_parsers.append(parser);
             }
         }
     }
