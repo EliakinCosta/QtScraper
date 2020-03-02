@@ -104,14 +104,18 @@ void QScrapEngine::parseRequests(QJsonArray &actions)
             } else if(jsonObject.value("method").toString() == "POST"){
                 if (jsonObject.value("data").isArray())
                 {
+                    QJsonObject scrapObject;
+                    IQWebScraperReponseParser *parser = loadParser(QWebScraperResponseParser::DefaultParser, scrapObject);
                     QJsonArray postData = jsonObject.value("data").toArray();
                     HttpRequestModel requestObj(
                         this->evaluateStringToContext(endpoint),
                         jsonObject.value("method").toString(),
                         jsonObject.value("headers").toObject(),
-                        postData
+                        postData,
+                        jsonObject.value("validator").toObject()
                     );
                     this->addRequest(requestObj);
+                    m_parsers.append(parser);
                 }
             }
         }
@@ -176,6 +180,7 @@ void QScrapEngine::saveToContext(QString key, QStringList value)
 void QScrapEngine::saveToContext(QString key, QJsonArray jsonArray)
 {
     QScrapEngine::CONTEXT.insert(key, jsonArray);
+    qDebug() << QScrapEngine::CONTEXT;
     Q_EMIT ctxChanged(QScrapEngine::CONTEXT);
 }
 
@@ -248,19 +253,16 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
     {
         QUrl newUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
         qDebug() << "redirected to " + newUrl.toString();
-        QHash<QString, QString> hashObj;
 
-        auto httpRequestModel = HttpRequestModel(newUrl.toString(), "GET", m_requestsSchedule.at(m_scheduleIndex).headersAsJsonObject());
+        QJsonObject jsonObject = m_requestsSchedule.at(m_scheduleIndex).validator();
+        IQWebScraperReponseParser *parser = loadParser(QWebScraperResponseParser::DefaultParser, jsonObject);
+        auto httpRequestModel = HttpRequestModel(newUrl.toString(), "GET", {});
 
-        auto replyRedirect = doHttpRequest(httpRequestModel);
+        this->addRequest(httpRequestModel);
+        m_parsers.append(parser);
 
-        connect (replyRedirect, &QNetworkReply::finished, this, [=]() {
-            replyRedirect->deleteLater();            
-
-            QString payload {replyRedirect->readAll()}; // clazy:exclude=qt4-qstring-from-array
-            tidyPayload(payload);
-
-        });
+        m_scheduleIndex++;
+        scrap();
         return;
     }
     QString payload {reply->readAll()}; // clazy:exclude=qt4-qstring-from-array
