@@ -20,7 +20,7 @@ private:
     QString m_method;
     QMap<QString, QString> m_headers;
     QJsonObject m_headersAsJsonObject;
-    QByteArray m_body;
+    QJsonArray m_body;
 };
 
 #endif // HTTPREQUESTMODEL_H

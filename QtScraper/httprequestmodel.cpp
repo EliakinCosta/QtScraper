@@ -7,7 +7,7 @@
 
 HttpRequestModel::HttpRequestModel(
     QString url, QString method, QJsonObject headers, QJsonArray body
-):m_url(url), m_method(method), m_headersAsJsonObject(headers)
+):m_url(url), m_method(method), m_headersAsJsonObject(headers), m_body(body)
 {
     QStringList keys = headers.keys();
     foreach (QString key, keys) {
