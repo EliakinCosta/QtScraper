@@ -26,23 +26,24 @@ Item {
             {
                 "endpoint": "https://www.fifaindex.com/accounts/login/",
                 "method": "POST",
+                "headers": {"referer": "https://www.fifaindex.com/accounts/login/"},
                 "data": [
                     {"csrfmiddlewaretoken": "%%token%%"},
                     {"login": usernameText.text},
                     {"password": passwordText.text}
                 ],
-                "scraps": [
-                    {
-                        "name": "name",
-                        "query": "/html/body/header/nav/div/ul[2]/li/a/span/string()"
-                    }
-                ]
+                "validator": {
+                    "name": "username",
+                    "query": "/html/body/main/div/script/string()"
+                }
             }
         ]
         onStatusChanged: {
             if (scraper.status === QWebScraperStatus.Ready) {
-                console.table(scraper.ctx);
-                itemLogin.userSigned = scraper.ctx["name"][0];
+                if (scraper.ctx["username"][0].toString().indexOf(usernameText.text) !== -1){
+                    itemLogin.userSigned = usernameText.text
+                }
+
             }
         }
     }
