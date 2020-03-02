@@ -5,7 +5,7 @@
 
 HttpRequestModel::HttpRequestModel(
         QString url, QString method, QJsonObject headers, QJsonArray body
-):m_url(url), m_method(method)
+):m_url(url), m_method(method), m_headersAsJsonObject(headers)
 {
     QStringList keys = headers.keys();
     foreach (QString key, keys) {
@@ -38,6 +38,11 @@ QString HttpRequestModel::method() const
 QMap<QString, QString> HttpRequestModel::headers() const
 {
     return m_headers;
+}
+
+QJsonObject HttpRequestModel::headersAsJsonObject() const
+{
+    return m_headersAsJsonObject;
 }
 
 QByteArray HttpRequestModel::body() const

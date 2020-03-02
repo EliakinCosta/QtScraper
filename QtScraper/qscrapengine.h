@@ -13,6 +13,7 @@
 class QByteArray;
 class QNetworkReply;
 class QJsonArray;
+class HttpRequestModel;
 
 class ScrapReply : public QObject
 {
@@ -36,8 +37,7 @@ public:
     void scrap();
     void parseRequests(QJsonArray &actions);
     void setBaseUrl(QString baseUrl);
-    void addRequest(QString httpMethod, QString endpoint);
-    void addRequest(QString httpMethod, QString endpoint, QJsonArray data);
+    void addRequest(HttpRequestModel requestObj);
     QString evaluateStringToContext(QString value);
     static void tidyPayload(QString &payload);
     static QJsonObject CONTEXT;
@@ -50,7 +50,7 @@ Q_SIGNALS:
      void statusChanged(QWebScraperStatus::Status status);
      void ctxChanged(QJsonObject jsonObject);
 private:
-    QNetworkReply *doHttpRequest(QHash<QString, QString> requestObj);
+    QNetworkReply *doHttpRequest(HttpRequestModel requestObj);
     QString fromByteArrayToString(QByteArray html);
     void saveToContext(QString key, QStringList value);
     void saveToContext(QString key, QJsonArray jsonArray);
@@ -59,7 +59,7 @@ private:
 private:
     QNetworkAccessManager m_manager;
     QNetworkRequest m_request;
-    QList<QHash<QString, QString>> m_requestsSchedule;
+    QList<HttpRequestModel> m_requestsSchedule;
     QList<IQWebScraperReponseParser*> m_parsers;
     QString m_baseUrl;
     int m_scheduleIndex = 0;

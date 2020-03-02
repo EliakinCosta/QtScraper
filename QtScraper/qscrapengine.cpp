@@ -15,6 +15,7 @@
 
 #include "qwebscraperstatus.h"
 #include "parserprototype.h"
+#include "httprequestmodel.h"
 
 
 QJsonObject QScrapEngine::CONTEXT;
@@ -90,19 +91,27 @@ void QScrapEngine::parseRequests(QJsonArray &actions)
                         QJsonObject scrapObject = scrap.toObject();
                         QWebScraperResponseParser::Type type = QWebScraperResponseParser::Type(scrapObject.value("responseParser").toInt());
                         IQWebScraperReponseParser *parser = loadParser(type, scrapObject);
+                        HttpRequestModel requestObj(
+                            this->evaluateStringToContext(endpoint),
+                            "GET",
+                            jsonObject.value("headers").toObject()
+                        );
+
+                        this->addRequest(requestObj);
                         m_parsers.append(parser);
-                        this->addRequest("GET", this->evaluateStringToContext(endpoint));
                     }
                 }
-            } else {
+            } else if(jsonObject.value("method").toString() == "POST"){
                 if (jsonObject.value("data").isArray())
                 {
                     QJsonArray postData = jsonObject.value("data").toArray();
-                    this->addRequest(
-                        "POST",
+                    HttpRequestModel requestObj(
                         this->evaluateStringToContext(endpoint),
+                        jsonObject.value("method").toString(),
+                        jsonObject.value("headers").toObject(),
                         postData
                     );
+                    this->addRequest(requestObj);
                 }
             }
         }
@@ -119,43 +128,21 @@ void QScrapEngine::scrap()
         return;
     }
 
-    QHash<QString, QString> requestObj;
-    requestObj = m_requestsSchedule.at(m_scheduleIndex);
+    auto requestObj = m_requestsSchedule.at(m_scheduleIndex);
 
     doHttpRequest(requestObj);
     setStatus(QWebScraperStatus::Loading);
 }
 
-void QScrapEngine::addRequest(QString httpMethod, QString endpoint)
+void QScrapEngine::addRequest(HttpRequestModel requestObj)
 {
-    QHash<QString, QString> hashObj;
-
-    hashObj.insert("httpMethod", httpMethod);
-    hashObj.insert("endpoint", endpoint);    
-
-    m_requestsSchedule.append(hashObj);
+    m_requestsSchedule.append(requestObj);
 }
 
-void QScrapEngine::addRequest(QString httpMethod, QString endpoint, QJsonArray data)
+QNetworkReply *QScrapEngine::doHttpRequest(HttpRequestModel requestObj)
 {
-    QHash<QString, QString> hashObj;
-
-    hashObj.insert("httpMethod", httpMethod);
-    hashObj.insert("endpoint", endpoint);
-
-    // Convert QJsonObject to QString
-    QJsonDocument doc(data);
-    QByteArray docByteArray = doc.toJson(QJsonDocument::Compact);
-    QString strJson = QLatin1String(docByteArray);
-    hashObj.insert("data", strJson);
-
-    m_requestsSchedule.append(hashObj);
-}
-
-QNetworkReply *QScrapEngine::doHttpRequest(QHash<QString, QString> requestObj)
-{
-    QString httpMethod = requestObj.value("httpMethod");
-    QString endpoint = requestObj.value("endpoint");
+    QString httpMethod = requestObj.method();
+    QString endpoint = requestObj.url();
 
     if (!endpoint.toLower().startsWith("http"))
         endpoint = m_baseUrl + endpoint;
@@ -164,25 +151,8 @@ QNetworkReply *QScrapEngine::doHttpRequest(QHash<QString, QString> requestObj)
     if(httpMethod ==  "GET") {
        return m_manager.get(m_request);
     } else if (httpMethod ==  "POST"){
-        QString data = requestObj.value("data");
-        QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
-        QJsonArray obj = doc.array();
-        QUrlQuery query;
-
-        for (QJsonArray::const_iterator iter = obj.begin(); iter != obj.end(); ++iter) {
-            if (iter->isObject())
-            {
-                QJsonObject jsonObj = iter->toObject();
-                for (QJsonObject::const_iterator it = jsonObj.begin(); it != jsonObj.end(); it++) {
-                    query.addQueryItem(it.key(), evaluateStringToContext(it.value().toString()));
-                }
-            }
-        }
-        QByteArray postData = query.toString(QUrl::FullyEncoded).toUtf8();
-
-        qDebug() << postData;
-
-        return m_manager.post(m_request, postData);
+        qDebug() << requestObj.body();
+        return m_manager.post(m_request, requestObj.body());
     }
 
     return nullptr;
@@ -257,8 +227,7 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
 {
     reply->deleteLater();
 
-    QHash<QString, QString> requestObj;
-    requestObj = m_requestsSchedule.at(m_scheduleIndex);
+    auto requestObj = m_requestsSchedule.at(m_scheduleIndex);
 
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
         qDebug() << "ERRO:" << reply->errorString().toLower();
@@ -277,10 +246,9 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
         qDebug() << "redirected to " + newUrl.toString();
         QHash<QString, QString> hashObj;
 
-        hashObj.insert("httpMethod", "GET");
-        hashObj.insert("endpoint", newUrl.toString());
+        auto httpRequestModel = HttpRequestModel(newUrl.toString(), "GET", m_requestsSchedule.at(m_scheduleIndex).headersAsJsonObject());
 
-        auto replyRedirect = doHttpRequest(hashObj);
+        auto replyRedirect = doHttpRequest(httpRequestModel);
 
         connect (replyRedirect, &QNetworkReply::finished, this, [=]() {
             replyRedirect->deleteLater();            

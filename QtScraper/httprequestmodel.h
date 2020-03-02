@@ -3,9 +3,9 @@
 
 #include <QMap>
 #include <QJsonArray>
+#include <QJsonObject>
 
 class QByteArray;
-class QJsonObject;
 
 class HttpRequestModel
 {
@@ -15,11 +15,13 @@ public:
     QString url() const;
     QString method() const;
     QMap<QString, QString> headers() const;
+    QJsonObject headersAsJsonObject() const;
     QByteArray body() const;
 private:
     QString m_url;
     QString m_method;
     QMap<QString, QString> m_headers;
+    QJsonObject m_headersAsJsonObject;
     QByteArray m_body;
 };
 
