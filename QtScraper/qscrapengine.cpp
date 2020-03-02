@@ -147,6 +147,9 @@ QNetworkReply *QScrapEngine::doHttpRequest(HttpRequestModel requestObj)
     if (!endpoint.toLower().startsWith("http"))
         endpoint = m_baseUrl + endpoint;
 
+    foreach(QString key, requestObj.headers().keys())
+        m_request.setRawHeader(key.toUtf8(), requestObj.headers().value(key).toUtf8());
+
     m_request.setUrl(endpoint);
     if(httpMethod ==  "GET") {
        return m_manager.get(m_request);
