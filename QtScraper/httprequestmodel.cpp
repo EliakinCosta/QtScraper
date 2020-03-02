@@ -3,8 +3,10 @@
 #include <QJsonObject>
 #include <QUrlQuery>
 
+#include "qscrapengine.h"
+
 HttpRequestModel::HttpRequestModel(
-        QString url, QString method, QJsonObject headers, QJsonArray body
+        QScrapEngine *scrapEngine, QString url, QString method, QJsonObject headers, QJsonArray body
 ):m_url(url), m_method(method), m_headersAsJsonObject(headers)
 {
     QStringList keys = headers.keys();
@@ -18,7 +20,7 @@ HttpRequestModel::HttpRequestModel(
         {
             QJsonObject jsonObj = iter->toObject();
             for (QJsonObject::const_iterator it = jsonObj.begin(); it != jsonObj.end(); it++) {
-                query.addQueryItem(it.key(), it.value().toString());
+                query.addQueryItem(it.key(), scrapEngine->evaluateStringToContext(it.value().toString()));
             }
         }
     }

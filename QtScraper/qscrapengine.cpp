@@ -92,6 +92,7 @@ void QScrapEngine::parseRequests(QJsonArray &actions)
                         QWebScraperResponseParser::Type type = QWebScraperResponseParser::Type(scrapObject.value("responseParser").toInt());
                         IQWebScraperReponseParser *parser = loadParser(type, scrapObject);
                         HttpRequestModel requestObj(
+                            this,
                             this->evaluateStringToContext(endpoint),
                             "GET",
                             jsonObject.value("headers").toObject()
@@ -106,6 +107,7 @@ void QScrapEngine::parseRequests(QJsonArray &actions)
                 {
                     QJsonArray postData = jsonObject.value("data").toArray();
                     HttpRequestModel requestObj(
+                        this,
                         this->evaluateStringToContext(endpoint),
                         jsonObject.value("method").toString(),
                         jsonObject.value("headers").toObject(),
@@ -249,7 +251,7 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
         qDebug() << "redirected to " + newUrl.toString();
         QHash<QString, QString> hashObj;
 
-        auto httpRequestModel = HttpRequestModel(newUrl.toString(), "GET", m_requestsSchedule.at(m_scheduleIndex).headersAsJsonObject());
+        auto httpRequestModel = HttpRequestModel(this, newUrl.toString(), "GET", m_requestsSchedule.at(m_scheduleIndex).headersAsJsonObject());
 
         auto replyRedirect = doHttpRequest(httpRequestModel);
 

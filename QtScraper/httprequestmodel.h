@@ -6,11 +6,12 @@
 #include <QJsonObject>
 
 class QByteArray;
+class QScrapEngine;
 
 class HttpRequestModel
 {
 public:
-    HttpRequestModel(QString url, QString method, QJsonObject headers, QJsonArray body = {});
+    HttpRequestModel(QScrapEngine *scrapEngine, QString url, QString method, QJsonObject headers, QJsonArray body = {});
     virtual ~HttpRequestModel(){}
     QString url() const;
     QString method() const;
