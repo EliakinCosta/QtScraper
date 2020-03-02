@@ -6,8 +6,8 @@
 #include "qscrapengine.h"
 
 HttpRequestModel::HttpRequestModel(
-    QString url, QString method, QJsonObject headers, QJsonArray body
-):m_url(url), m_method(method), m_headersAsJsonObject(headers), m_body(body)
+    QString url, QString method, QJsonObject headers, QJsonArray body, QJsonObject validator
+):m_url(url), m_method(method), m_headersAsJsonObject(headers), m_body(body), m_validator(validator)
 {
     QStringList keys = headers.keys();
     foreach (QString key, keys) {
@@ -38,4 +38,9 @@ QJsonObject HttpRequestModel::headersAsJsonObject() const
 QJsonArray HttpRequestModel::body() const
 {
     return m_body;
+}
+
+QJsonObject HttpRequestModel::validator() const
+{
+    return m_validator;
 }
