@@ -56,6 +56,7 @@ private:
     void saveToContext(QString key, QJsonArray jsonArray);
     QJsonObject objectFromString(const QString& in);
     IQWebScraperReponseParser *loadParser(QWebScraperResponseParser::Type, QJsonObject jsonObj);
+    QByteArray parseRequestBody(QJsonArray body);
 private:
     QNetworkAccessManager m_manager;
     QNetworkRequest m_request;
