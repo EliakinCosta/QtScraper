@@ -9,8 +9,7 @@ Item {
     property var topPlayers: []
 
     QWebScraper {
-        id: scraper
-        url: "https://www.fifaindex.com/"
+        id: scraper        
         actions: [
             {
                 "endpoint": "https://www.fifaindex.com/players/top/",                
