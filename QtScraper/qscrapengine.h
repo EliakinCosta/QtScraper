@@ -57,6 +57,7 @@ private:
     QJsonObject objectFromString(const QString& in);
     IQWebScraperReponseParser *loadParser(QWebScraperResponseParser::Type, QJsonObject jsonObj);
     QByteArray parseRequestBody(QJsonArray body);
+    QString parseBaseUrl(QString endpoint);
 private:
     QNetworkAccessManager m_manager;
     QNetworkRequest m_request;

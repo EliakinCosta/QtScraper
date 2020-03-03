@@ -17,17 +17,14 @@ class QWebScraper : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QJsonArray actions READ actions WRITE setActions)
-    Q_PROPERTY(QString url READ url WRITE setUrl)
+    Q_PROPERTY(QJsonArray actions READ actions WRITE setActions)    
     Q_PROPERTY(QJsonObject ctx READ ctx NOTIFY ctxChanged)
     Q_PROPERTY(QWebScraperStatus::Status status READ status NOTIFY statusChanged)
 public:
     explicit QWebScraper(QObject *parent = nullptr);
     virtual ~QWebScraper();
     QJsonArray actions() const;
-    void setActions(const QJsonArray &actions);
-    QString url() const;
-    void setUrl(const QString url);
+    void setActions(const QJsonArray &actions);    
     QJsonObject ctx() const;
 
     QWebScraperStatus::Status status() const;
@@ -41,8 +38,7 @@ Q_SIGNALS:
 private:
     void saveToContext();
 private:
-    QJsonArray m_actions;
-    QString m_url;
+    QJsonArray m_actions;    
     QScrapEngine m_scrapEngine;
 };
 

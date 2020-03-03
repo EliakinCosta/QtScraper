@@ -72,6 +72,15 @@ IQWebScraperReponseParser *QScrapEngine::loadParser(QWebScraperResponseParser::T
     return dynamic_cast<IQWebScraperReponseParser*>(ParserPrototype::create(type, jsonObj));
 }
 
+QString QScrapEngine::parseBaseUrl(QString endpoint)
+{
+    QRegularExpression re("^.+?[^/:](?=[?/]|$)");
+    QRegularExpressionMatchIterator i = re.globalMatch(endpoint);
+    QRegularExpressionMatch match = i.next();
+    QString baseUrl = match.captured();
+    return baseUrl;
+}
+
 void QScrapEngine::parseRequests(QJsonArray &actions)
 {
     ParserPrototype::initialize();
@@ -79,6 +88,8 @@ void QScrapEngine::parseRequests(QJsonArray &actions)
     {
         QJsonObject jsonObject = jsonValue.toObject();
         QString endpoint = jsonObject.value("endpoint").toString();
+        if (m_baseUrl.isEmpty())
+            m_baseUrl = parseBaseUrl(endpoint);
         QString method = jsonObject.value("method").toString("GET");
         if(method == "GET")
         {

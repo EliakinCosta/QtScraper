@@ -37,24 +37,13 @@ QJsonObject QWebScraper::ctx() const
     return m_scrapEngine.CONTEXT;
 }
 
-QString QWebScraper::url() const
-{
-    return m_url;
-}
-
-void QWebScraper::setUrl(const QString url)
-{
-    m_url = url;
-}
-
 QWebScraperStatus::Status QWebScraper::status() const
 {
     return m_scrapEngine.status();
 }
 
 void QWebScraper::scrap()
-{
-    m_scrapEngine.setBaseUrl(m_url);    
+{    
     m_scrapEngine.parseRequests(m_actions);
     m_scrapEngine.scrap();
 }
