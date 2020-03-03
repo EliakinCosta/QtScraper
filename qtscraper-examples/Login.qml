@@ -10,12 +10,10 @@ Item {
     anchors.fill: parent
 
     QWebScraper {
-        id: scraper
-        url: "https://www.fifaindex.com/"
+        id: scraper        
         actions: [
             {
-                "endpoint": "https://www.fifaindex.com/accounts/login/",
-                "method": "GET",
+                "endpoint": "https://www.fifaindex.com/accounts/login/",                
                 "scraps": [
                     {
                         "name": "token",
