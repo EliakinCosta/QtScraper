@@ -17,6 +17,7 @@ SOURCES += \
         qscrapengine.cpp \
         qtscraper_plugin.cpp \
         qwebscraper.cpp \
+        qwebscraperaction.cpp \
         qwebscraperresponseparser.cpp \
         qwebscraperstatus.cpp \
         tableresponseparser.cpp
@@ -29,6 +30,7 @@ HEADERS += \
         qscrapengine.h \
         qtscraper_plugin.h \
         qwebscraper.h \
+        qwebscraperaction.h \
         qwebscraperresponseparser.h \
         qwebscraperstatus.h \
         tableresponseparser.h
