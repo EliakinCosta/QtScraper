@@ -12,6 +12,7 @@
 #include "qwebscraperstatus.h"
 #include "iqwebscraperresponseparser.h"
 #include "qwebscraperresponseparser.h"
+#include "qwebscraperaction.h"
 
 class QWebScraper : public QObject
 {

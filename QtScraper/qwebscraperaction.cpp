@@ -1,8 +1,10 @@
 #include "qwebscraperaction.h"
 
+#include <QDebug>
+
 QWebScraperAction::QWebScraperAction(QObject *parent) : QObject(parent)
 {
-
+    this->setMethod("GET");
 }
 
 QWebScraperAction::~QWebScraperAction()

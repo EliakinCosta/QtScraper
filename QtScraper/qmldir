@@ -1,5 +1,6 @@
 module com.ifba.edu.scraping
 plugin QtScraper
-classname WebScraper
+classname QWebScraper
 classname QWebScraperStatus
 classname QWebScraperResponseParser
+classname QWebScraperAction
