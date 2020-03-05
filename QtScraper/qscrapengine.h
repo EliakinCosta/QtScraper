@@ -9,6 +9,7 @@
 #include "qwebscraperstatus.h"
 #include "iqwebscraperresponseparser.h"
 #include "qwebscraperresponseparser.h"
+#include "qwebscraperaction.h"
 
 class QByteArray;
 class QNetworkReply;
@@ -35,7 +36,7 @@ public:
     explicit QScrapEngine(QObject *parent = nullptr);
     virtual ~QScrapEngine();
     void scrap();
-    void parseRequests(QJsonArray &actions);
+    void parseRequests(QVector<QWebScraperAction*> actions);
     void setBaseUrl(QString baseUrl);
     void addRequest(HttpRequestModel requestObj);
     QString evaluateStringToContext(QString value);
@@ -52,7 +53,7 @@ Q_SIGNALS:
 private:
     QNetworkReply *doHttpRequest(HttpRequestModel requestObj);
     QString fromByteArrayToString(QByteArray html);
-    void saveToContext(QString key, QStringList value);
+    void saveToContext(QJsonObject jsonObject);
     void saveToContext(QString key, QJsonArray jsonArray);
     QJsonObject objectFromString(const QString& in);
     IQWebScraperReponseParser *loadParser(QWebScraperResponseParser::Type, QJsonObject jsonObj);
@@ -62,9 +63,10 @@ private:
     QNetworkAccessManager m_manager;
     QNetworkRequest m_request;
     QList<HttpRequestModel> m_requestsSchedule;
-    QList<IQWebScraperReponseParser*> m_parsers;
+    QVector<QWebScraperAction*> m_actions;
     QString m_baseUrl;
-    int m_scheduleIndex = 0;
+    int m_requestScheduleIndex = 0;
+    int m_currentActionIndex = 0;
     QWebScraperStatus::Status m_status;
 
 };

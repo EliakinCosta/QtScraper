@@ -1,28 +1,25 @@
 #ifndef HTTPREQUESTMODEL_H
 #define HTTPREQUESTMODEL_H
 
-#include <QMap>
 #include <QJsonArray>
-#include <QJsonObject>
+#include <QVariantMap>
 
 class HttpRequestModel
 {
 public:
-    HttpRequestModel(QString url, QString method, QJsonObject headers, QJsonArray body = {}, QJsonObject validator = {});
+    HttpRequestModel(QString url, QString method, QVariantMap headers, QJsonArray body = {}, QVariantMap validator = {});
     virtual ~HttpRequestModel(){}
     QString url() const;
     QString method() const;
-    QMap<QString, QString> headers() const;
-    QJsonObject headersAsJsonObject() const;
+    QVariantMap headers() const;
     QJsonArray body() const;
-    QJsonObject validator() const;
+    QVariantMap validator() const;
 private:
     QString m_url;
     QString m_method;
-    QMap<QString, QString> m_headers;
-    QJsonObject m_headersAsJsonObject;
+    QVariantMap m_headers;
     QJsonArray m_body;
-    QJsonObject m_validator;
+    QVariantMap m_validator;
 };
 
 #endif // HTTPREQUESTMODEL_H

@@ -1,18 +1,13 @@
 #include "httprequestmodel.h"
 
-#include <QJsonObject>
 #include <QUrlQuery>
 
 #include "qscrapengine.h"
 
 HttpRequestModel::HttpRequestModel(
-    QString url, QString method, QJsonObject headers, QJsonArray body, QJsonObject validator
-):m_url(url), m_method(method), m_headersAsJsonObject(headers), m_body(body), m_validator(validator)
-{
-    QStringList keys = headers.keys();
-    foreach (QString key, keys) {
-        m_headers.insert(key, headers.value(key).toString());
-    }
+    QString url, QString method, QVariantMap headers, QJsonArray body, QVariantMap validator
+):m_url(url), m_method(method), m_headers(headers), m_body(body), m_validator(validator)
+{    
 }
 
 QString HttpRequestModel::url() const
@@ -25,14 +20,9 @@ QString HttpRequestModel::method() const
     return m_method;
 }
 
-QMap<QString, QString> HttpRequestModel::headers() const
+QVariantMap HttpRequestModel::headers() const
 {
     return m_headers;
-}
-
-QJsonObject HttpRequestModel::headersAsJsonObject() const
-{
-    return m_headersAsJsonObject;
 }
 
 QJsonArray HttpRequestModel::body() const
@@ -40,7 +30,7 @@ QJsonArray HttpRequestModel::body() const
     return m_body;
 }
 
-QJsonObject HttpRequestModel::validator() const
+QVariantMap HttpRequestModel::validator() const
 {
     return m_validator;
 }

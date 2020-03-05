@@ -1,9 +1,12 @@
 #ifndef QWEBSCRAPERACTION_H
 #define QWEBSCRAPERACTION_H
 
+#include <QQuickItem>
 #include <QObject>
 #include <QJsonArray>
 #include <QVariantMap>
+
+#include "iqwebscraperresponseparser.h"
 
 class QWebScraperAction : public QObject
 {
@@ -29,6 +32,9 @@ public:
     void setData(const QJsonArray data);
     QVariantMap validator() const;
     void setValidator(const QVariantMap validator);
+    void appendParser(IQWebScraperReponseParser *parser);
+    void loadScraps();
+    void parseScraps(QString payload);
 private:
     QString m_endpoint;
     QString m_method;
@@ -36,6 +42,7 @@ private:
     QJsonArray m_scraps;
     QJsonArray m_data;
     QVariantMap m_validator;
+    QList<IQWebScraperReponseParser*> m_parsers;
 };
 
 #endif // QWEBSCRAPERACTION_H

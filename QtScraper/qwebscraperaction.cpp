@@ -1,6 +1,9 @@
 #include "qwebscraperaction.h"
 
 #include <QDebug>
+#include <QJsonObject>
+
+#include "qwebscraperresponseparser.h"
 
 QWebScraperAction::QWebScraperAction(QObject *parent) : QObject(parent)
 {
@@ -72,4 +75,33 @@ QVariantMap QWebScraperAction::validator() const
 void QWebScraperAction::setValidator(const QVariantMap validator)
 {
     m_validator = validator;
+}
+
+void QWebScraperAction::appendParser(IQWebScraperReponseParser *parser)
+{
+    m_parsers.append(parser);
+}
+
+void QWebScraperAction::loadScraps()
+{
+    if(this->method() == "GET")
+    {
+        foreach(QJsonValue scrap, this->scraps())
+        {
+            QJsonObject scrapObject = scrap.toObject();
+            QWebScraperResponseParser::Type type = QWebScraperResponseParser::Type(scrapObject.value("responseParser").toInt());
+            IQWebScraperReponseParser *parser = loadParser(type, scrapObject);                ;
+            m_parsers.append(parser);
+        }
+    } else if(this->method() == "POST"){
+            QJsonObject scrapObject;
+            IQWebScraperReponseParser *parser = loadParser(QWebScraperResponseParser::DefaultParser, scrapObject);
+            QJsonArray postData = this->data();            ;
+            m_parsers.append(parser);
+    }
+}
+
+void parseScraps(QString payload)
+{
+
 }

@@ -29,9 +29,9 @@ ScrapReply::ScrapReply(QObject *parent)
 QScrapEngine::QScrapEngine(QObject *parent) : QObject(parent)
 {
     m_request.setHeader(
-        QNetworkRequest::ContentTypeHeader,
-        QStringLiteral("application/x-www-form-urlencoded")
-    );
+                QNetworkRequest::ContentTypeHeader,
+                QStringLiteral("application/x-www-form-urlencoded")
+                );
 
     m_request.setRawHeader( "User-Agent" , "Mozilla Firefox" );
 
@@ -41,7 +41,7 @@ QScrapEngine::QScrapEngine(QObject *parent) : QObject(parent)
     m_request.setSslConfiguration(conf);
 
     QObject::connect(&m_manager, &QNetworkAccessManager::finished,
-                         this, &QScrapEngine::replyFinished);
+                     this, &QScrapEngine::replyFinished);
 
 }
 
@@ -81,52 +81,36 @@ QString QScrapEngine::parseBaseUrl(QString endpoint)
     return baseUrl;
 }
 
-void QScrapEngine::parseRequests(QJsonArray &actions)
+void QScrapEngine::parseRequests(QVector<QWebScraperAction*> actions)
 {
+    m_actions = actions;
     ParserPrototype::initialize();
-    foreach(QJsonValue jsonValue, actions)
+
+    foreach(QWebScraperAction *action, m_actions)
     {
-        QJsonObject jsonObject = jsonValue.toObject();
-        QString endpoint = jsonObject.value("endpoint").toString();
+        action->parseScraps();
+        QString endpoint = action->endpoint();
         if (m_baseUrl.isEmpty())
             m_baseUrl = parseBaseUrl(endpoint);
-        QString method = jsonObject.value("method").toString("GET");
+        QString method = action->method();
+
         if(method == "GET")
         {
-            if (jsonObject.value("scraps").isArray())
-            {
-                QJsonArray scraps = jsonObject.value("scraps").toArray();
-                foreach(QJsonValue scrap, scraps)
-                {
-                    QJsonObject scrapObject = scrap.toObject();
-                    QWebScraperResponseParser::Type type = QWebScraperResponseParser::Type(scrapObject.value("responseParser").toInt());
-                    IQWebScraperReponseParser *parser = loadParser(type, scrapObject);
-                    HttpRequestModel requestObj(
-                        this->evaluateStringToContext(endpoint),
-                        "GET",
-                        jsonObject.value("headers").toObject()
-                    );
-
-                    this->addRequest(requestObj);
-                    m_parsers.append(parser);
-                }
-            }
+            HttpRequestModel requestObj(
+                this->evaluateStringToContext(endpoint),
+                method,
+                action->headers()
+            );
+            this->addRequest(requestObj);
         } else if(method == "POST"){
-            if (jsonObject.value("data").isArray())
-            {
-                QJsonObject scrapObject;
-                IQWebScraperReponseParser *parser = loadParser(QWebScraperResponseParser::DefaultParser, scrapObject);
-                QJsonArray postData = jsonObject.value("data").toArray();
-                HttpRequestModel requestObj(
-                    this->evaluateStringToContext(endpoint),
-                    jsonObject.value("method").toString(),
-                    jsonObject.value("headers").toObject(),
-                    postData,
-                    jsonObject.value("validator").toObject()
-                );
-                this->addRequest(requestObj);
-                m_parsers.append(parser);
-            }
+            HttpRequestModel requestObj(
+                this->evaluateStringToContext(endpoint),
+                method,
+                action->headers(),
+                action->data(),
+                action->validator()
+            );
+            this->addRequest(requestObj);
         }
     }
 }
@@ -134,14 +118,14 @@ void QScrapEngine::parseRequests(QJsonArray &actions)
 
 void QScrapEngine::scrap()
 {
-    if (m_requestsSchedule.size() == 0 || m_scheduleIndex >= m_requestsSchedule.size())
+    if (m_requestsSchedule.size() == 0 || m_requestScheduleIndex >= m_requestsSchedule.size())
     {
         qDebug() << QScrapEngine::CONTEXT;
         setStatus(QWebScraperStatus::Ready);
         return;
     }
 
-    auto requestObj = m_requestsSchedule.at(m_scheduleIndex);
+    auto requestObj = m_requestsSchedule.at(m_requestScheduleIndex);
 
     doHttpRequest(requestObj);
     setStatus(QWebScraperStatus::Loading);
@@ -161,12 +145,12 @@ QNetworkReply *QScrapEngine::doHttpRequest(HttpRequestModel requestObj)
         endpoint = m_baseUrl + endpoint;
 
     foreach(QString key, requestObj.headers().keys())
-        m_request.setRawHeader(key.toUtf8(), requestObj.headers().value(key).toUtf8());
+        m_request.setRawHeader(key.toUtf8(), requestObj.headers().value(key).toString().toUtf8());
 
     m_request.setUrl(endpoint);
     if(httpMethod ==  "GET") {
-       return m_manager.get(m_request);
-    } else if (httpMethod ==  "POST"){        
+        return m_manager.get(m_request);
+    } else if (httpMethod ==  "POST"){
         QByteArray body = parseRequestBody(requestObj.body());
         qDebug() << body;
         return m_manager.post(m_request, body);
@@ -180,9 +164,9 @@ QString QScrapEngine::fromByteArrayToString(QByteArray html)
     return QTextCodec::codecForName("iso-8859-1")->toUnicode(html);
 }
 
-void QScrapEngine::saveToContext(QString key, QStringList value)
+void QScrapEngine::saveToContext(QJsonObject jsonObject)
 {
-    QScrapEngine::CONTEXT.insert(key, QJsonArray::fromStringList(value));
+    QScrapEngine::CONTEXT.insert(jsonObject.value("objectName").toString(), jsonObject.value("jsonArray").toArray());
     Q_EMIT ctxChanged(QScrapEngine::CONTEXT);
 }
 
@@ -245,7 +229,7 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
 {
     reply->deleteLater();
 
-    auto requestObj = m_requestsSchedule.at(m_scheduleIndex);
+    auto requestObj = m_requestsSchedule.at(m_requestScheduleIndex);
 
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
         qDebug() << "ERRO:" << reply->errorString().toLower();
@@ -263,26 +247,22 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
         QUrl newUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
         qDebug() << "redirected to " + newUrl.toString();
 
-        QJsonObject jsonObject = m_requestsSchedule.at(m_scheduleIndex).validator();
-        IQWebScraperReponseParser *parser = loadParser(QWebScraperResponseParser::DefaultParser, jsonObject);
         auto httpRequestModel = HttpRequestModel(newUrl.toString(), "GET", {});
-
         this->addRequest(httpRequestModel);
-        m_parsers.append(parser);
 
-        m_scheduleIndex++;
+        m_requestScheduleIndex++;
         scrap();
         return;
     }
     QString payload {reply->readAll()}; // clazy:exclude=qt4-qstring-from-array
     tidyPayload(payload);
 
-    auto parser = m_parsers[m_scheduleIndex];
-    auto model = parser->parse(payload);
+    auto model = m_actions.at(m_currentActionIndex)->parseScraps(payload);
 
-    saveToContext(parser->name(), model);
+    saveToContext(model);
 
-    m_scheduleIndex++;
+    m_requestScheduleIndex++;
+    m_currentActionIndex++;
     scrap();
 }
 
