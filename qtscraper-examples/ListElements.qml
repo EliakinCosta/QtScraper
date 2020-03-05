@@ -6,14 +6,14 @@ import com.ifba.edu.scraping 1.0
 Item {
     id: itemListElements
     anchors.fill: parent
-    property var topPlayers: []
+    property var topPlayers: []    
 
     QWebScraper {
-        id: scraper        
+        id: scraper
         actions: [
-            {
-                "endpoint": "https://www.fifaindex.com/players/top/",                
-                "scraps": [                    
+            QWebScraperAction {
+                endpoint: "https://www.fifaindex.com/players/top/"
+                scraps: [
                     {
                         "name": "topPlayers",
                         "query": "/html/body/main/div/div[2]/div[2]/div[2]/table/tbody/tr/td[$index]/a/@title/string()",
@@ -24,12 +24,6 @@ Item {
                 ]
             }
         ]
-        onStatusChanged: {
-            if (scraper.status === QWebScraperStatus.Ready) {
-                topPlayers = ctx["topPlayers"]
-                console.log(JSON.stringify(topPlayers));
-            }
-        }
     }
 
     Column {
