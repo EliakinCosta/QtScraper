@@ -10,27 +10,27 @@ Item {
     anchors.fill: parent
 
     QWebScraper {
-        id: scraper        
+        id: scraper
         actions: [
-            {
-                "endpoint": "https://www.fifaindex.com/accounts/login/",                
-                "scraps": [
+            QWebScraperAction {
+                endpoint: "https://www.fifaindex.com/accounts/login/"
+                scraps: [
                     {
                         "name": "token",
                         "query": "/html/body/main/div/div[2]/div/div/div/form/input/@value/string()"
                     }
                 ]
             },
-            {
-                "endpoint": "https://www.fifaindex.com/accounts/login/",
-                "method": "POST",
-                "headers": {"referer": "https://www.fifaindex.com/accounts/login/"},
-                "data": [
+            QWebScraperAction {
+                endpoint: "https://www.fifaindex.com/accounts/login/"
+                method: "POST"
+                headers: {"referer": "https://www.fifaindex.com/accounts/login/"}
+                data: [
                     {"csrfmiddlewaretoken": "%%token%%"},
                     {"login": usernameText.text},
                     {"password": passwordText.text}
-                ],
-                "validator": {
+                ]
+                validator: {
                     "name": "username",
                     "query": "/html/body/main/div/script/string()"
                 }
