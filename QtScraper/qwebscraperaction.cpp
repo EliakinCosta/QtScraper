@@ -4,6 +4,7 @@
 #include <QJsonObject>
 
 #include "qwebscraperresponseparser.h"
+#include "parserprototype.h"
 
 QWebScraperAction::QWebScraperAction(QObject *parent) : QObject(parent)
 {
@@ -82,26 +83,31 @@ void QWebScraperAction::appendParser(IQWebScraperReponseParser *parser)
     m_parsers.append(parser);
 }
 
-void QWebScraperAction::loadScraps()
+IQWebScraperReponseParser *QWebScraperAction::loadParser(QWebScraperResponseParser::Type type, QJsonObject jsonObj)
 {
-    if(this->method() == "GET")
+    return dynamic_cast<IQWebScraperReponseParser*>(ParserPrototype::create(type, jsonObj));
+}
+
+void QWebScraperAction::loadScraps()
+{        
+    foreach(QJsonValue scrap, this->scraps())
     {
-        foreach(QJsonValue scrap, this->scraps())
-        {
-            QJsonObject scrapObject = scrap.toObject();
-            QWebScraperResponseParser::Type type = QWebScraperResponseParser::Type(scrapObject.value("responseParser").toInt());
-            IQWebScraperReponseParser *parser = loadParser(type, scrapObject);                ;
-            m_parsers.append(parser);
-        }
-    } else if(this->method() == "POST"){
-            QJsonObject scrapObject;
-            IQWebScraperReponseParser *parser = loadParser(QWebScraperResponseParser::DefaultParser, scrapObject);
-            QJsonArray postData = this->data();            ;
-            m_parsers.append(parser);
+        QJsonObject scrapObject = scrap.toObject();
+        QWebScraperResponseParser::Type type = QWebScraperResponseParser::Type(scrapObject.value("responseParser").toInt());
+        IQWebScraperReponseParser *parser = loadParser(type, scrapObject);                ;
+        m_parsers.append(parser);
     }
 }
 
-void parseScraps(QString payload)
+QJsonArray QWebScraperAction::parseScraps(QString payload)
 {
-
+    QJsonArray model;
+    foreach (IQWebScraperReponseParser *parser, this->m_parsers)
+    {
+        QJsonObject obj;
+        obj.insert("name", parser->name());
+        obj.insert("value", parser->parse(payload));
+        model.append(obj);
+    }
+    return model;
 }

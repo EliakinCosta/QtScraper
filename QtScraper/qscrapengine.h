@@ -6,9 +6,8 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 
-#include "qwebscraperstatus.h"
-#include "iqwebscraperresponseparser.h"
 #include "qwebscraperresponseparser.h"
+#include "qwebscraperstatus.h"
 #include "qwebscraperaction.h"
 
 class QByteArray;
@@ -55,8 +54,7 @@ private:
     QString fromByteArrayToString(QByteArray html);
     void saveToContext(QJsonObject jsonObject);
     void saveToContext(QString key, QJsonArray jsonArray);
-    QJsonObject objectFromString(const QString& in);
-    IQWebScraperReponseParser *loadParser(QWebScraperResponseParser::Type, QJsonObject jsonObj);
+    QJsonObject objectFromString(const QString& in);    
     QByteArray parseRequestBody(QJsonArray body);
     QString parseBaseUrl(QString endpoint);
 private:

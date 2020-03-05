@@ -7,6 +7,7 @@
 #include <QVariantMap>
 
 #include "iqwebscraperresponseparser.h"
+#include "qwebscraperresponseparser.h"
 
 class QWebScraperAction : public QObject
 {
@@ -34,8 +35,9 @@ public:
     void setValidator(const QVariantMap validator);
     void appendParser(IQWebScraperReponseParser *parser);
     void loadScraps();
-    void parseScraps(QString payload);
+    QJsonArray parseScraps(QString payload);
 private:
+    IQWebScraperReponseParser *loadParser(QWebScraperResponseParser::Type, QJsonObject jsonObj);
     QString m_endpoint;
     QString m_method;
     QVariantMap m_headers;

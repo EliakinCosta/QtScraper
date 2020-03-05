@@ -67,11 +67,6 @@ void QScrapEngine::tidyPayload(QString &payload)
     payload = QString::fromUtf8(reinterpret_cast<char*>(output.bp)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 }
 
-IQWebScraperReponseParser *QScrapEngine::loadParser(QWebScraperResponseParser::Type type, QJsonObject jsonObj)
-{
-    return dynamic_cast<IQWebScraperReponseParser*>(ParserPrototype::create(type, jsonObj));
-}
-
 QString QScrapEngine::parseBaseUrl(QString endpoint)
 {
     QRegularExpression re("^.+?[^/:](?=[?/]|$)");
@@ -88,7 +83,7 @@ void QScrapEngine::parseRequests(QVector<QWebScraperAction*> actions)
 
     foreach(QWebScraperAction *action, m_actions)
     {
-        action->parseScraps();
+        action->loadScraps();
         QString endpoint = action->endpoint();
         if (m_baseUrl.isEmpty())
             m_baseUrl = parseBaseUrl(endpoint);
@@ -259,7 +254,11 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
 
     auto model = m_actions.at(m_currentActionIndex)->parseScraps(payload);
 
-    saveToContext(model);
+    foreach (QJsonValue obj, model)
+    {
+        QJsonObject resultObj = obj.toObject();
+        saveToContext(resultObj.value("name").toString(), resultObj.value("value").toArray());
+    }
 
     m_requestScheduleIndex++;
     m_currentActionIndex++;
