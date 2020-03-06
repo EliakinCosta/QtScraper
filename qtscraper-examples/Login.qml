@@ -36,14 +36,7 @@ Item {
                 }
             }
         ]
-        onStatusChanged: {
-            if (scraper.status === QWebScraperStatus.Ready) {
-                if (scraper.ctx["username"][0].toString().indexOf(usernameText.text) !== -1){
-                    itemLogin.userSigned = usernameText.text
-                }
-
-            }
-        }
+        Component.onCompleted: console.log(scraper.actions[1].valid)
     }
 
     Column {
@@ -75,8 +68,9 @@ Item {
 
         Label {
             id: userLabel
-            text: userSigned ? userSigned : ""
-            visible: userSigned
+            color: "green"
+            text: "You are now logged in"
+            visible: {console.log(scraper.actions[1].valid); return scraper.actions[1].valid}
         }
     }
 
