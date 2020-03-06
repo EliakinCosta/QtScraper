@@ -18,6 +18,7 @@ class QWebScraperAction : public QObject
     Q_PROPERTY(QJsonArray scraps READ scraps WRITE setScraps)
     Q_PROPERTY(QJsonArray data READ data WRITE setData)
     Q_PROPERTY(QVariantMap validator READ validator WRITE setValidator)
+    Q_PROPERTY(bool valid READ valid NOTIFY validChanged)
 public:
     explicit QWebScraperAction(QObject *parent = nullptr);
     virtual ~QWebScraperAction();
@@ -36,6 +37,12 @@ public:
     void appendParser(IQWebScraperReponseParser *parser);
     void loadScraps();
     QJsonArray parseScraps(QString payload);
+    bool valid() const;
+    void checkValidator(QString payload);
+Q_SIGNALS:
+    void validChanged(bool);
+private:
+    void setValid(bool valid);
 private:
     IQWebScraperReponseParser *loadParser(QWebScraperResponseParser::Type, QJsonObject jsonObj);
     QString m_endpoint;
@@ -45,6 +52,7 @@ private:
     QJsonArray m_data;
     QVariantMap m_validator;
     QList<IQWebScraperReponseParser*> m_parsers;
+    bool m_valid;
 };
 
 #endif // QWEBSCRAPERACTION_H

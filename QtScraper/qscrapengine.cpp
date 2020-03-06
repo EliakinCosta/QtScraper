@@ -252,7 +252,9 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
     QString payload {reply->readAll()}; // clazy:exclude=qt4-qstring-from-array
     tidyPayload(payload);
 
-    auto model = m_actions.at(m_currentActionIndex)->parseScraps(payload);
+    auto currentAction = m_actions.at(m_currentActionIndex);
+    auto model = currentAction->parseScraps(payload);
+    currentAction->checkValidator(payload);
 
     foreach (QJsonValue obj, model)
     {

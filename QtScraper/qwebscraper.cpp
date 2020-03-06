@@ -35,6 +35,7 @@ QQmlListProperty<QWebScraperAction> QWebScraper::actions()
 void QWebScraper::appendAction(QWebScraperAction *action)
 {
     m_actions.append(action);
+    Q_EMIT actionsChanged();
 }
 
 int QWebScraper::actionCount() const
@@ -49,6 +50,7 @@ QWebScraperAction *QWebScraper::action(int index) const
 
 void QWebScraper::clearActions() {
     m_actions.clear();
+    Q_EMIT actionsChanged();
 }
 
 

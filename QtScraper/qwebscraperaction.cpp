@@ -6,7 +6,7 @@
 #include "qwebscraperresponseparser.h"
 #include "parserprototype.h"
 
-QWebScraperAction::QWebScraperAction(QObject *parent) : QObject(parent)
+QWebScraperAction::QWebScraperAction(QObject *parent) : QObject(parent), m_valid(false)
 {
     this->setMethod("GET");
 }
@@ -110,4 +110,36 @@ QJsonArray QWebScraperAction::parseScraps(QString payload)
         model.append(obj);
     }
     return model;
+}
+
+bool QWebScraperAction::valid() const
+{
+    return m_valid;
+}
+
+void QWebScraperAction::setValid(bool is_valid)
+{
+    if (is_valid != m_valid)
+    {
+        m_valid = is_valid;
+        Q_EMIT validChanged(is_valid);
+    }
+}
+
+void QWebScraperAction::checkValidator(QString payload)
+{
+    if (m_validator.isEmpty())
+    {
+        setValid(true);
+        return;
+    }
+
+    IQWebScraperReponseParser *parser = loadParser(
+        QWebScraperResponseParser::DefaultParser,
+        QJsonObject::fromVariantMap(m_validator)
+    );
+
+    auto result = parser->parse(payload);
+
+    setValid(!result.isEmpty());
 }

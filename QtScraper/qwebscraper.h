@@ -20,7 +20,7 @@ class QWebScraper : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QQmlListProperty<QWebScraperAction> actions READ actions)
+    Q_PROPERTY(QQmlListProperty<QWebScraperAction> actions READ actions NOTIFY actionsChanged)
     Q_PROPERTY(QJsonObject ctx READ ctx NOTIFY ctxChanged)
     Q_PROPERTY(QWebScraperStatus::Status status READ status NOTIFY statusChanged)
 public:
@@ -41,7 +41,8 @@ public:
 
 Q_SIGNALS:
     void statusChanged(QWebScraperStatus::Status);
-    void ctxChanged(QJsonObject);    
+    void ctxChanged(QJsonObject);
+    void actionsChanged();
 private:
     static void appendAction(QQmlListProperty<QWebScraperAction>*, QWebScraperAction*);
     static int actionCount(QQmlListProperty<QWebScraperAction>*);
