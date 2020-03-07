@@ -15,7 +15,7 @@ QWebScraper::QWebScraper(QObject *parent) :
     QObject{parent}, m_actions({})
 {
     connect(&m_scrapEngine, &QScrapEngine::statusChanged, this, &QWebScraper::statusChanged);
-    connect(&m_scrapEngine, &QScrapEngine::ctxChanged, this, &QWebScraper::ctxChanged);
+    connect(&m_scrapEngine, &QScrapEngine::ctxChanged, this, &QWebScraper::ctxChanged);    
 }
 
 QWebScraper::~QWebScraper()
@@ -35,6 +35,7 @@ QQmlListProperty<QWebScraperAction> QWebScraper::actions()
 void QWebScraper::appendAction(QWebScraperAction *action)
 {
     m_actions.append(action);
+    connect(action, &QWebScraperAction::validChanged, this, &QWebScraper::actionsChanged);
     Q_EMIT actionsChanged();
 }
 

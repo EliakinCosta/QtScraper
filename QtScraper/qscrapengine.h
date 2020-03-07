@@ -49,6 +49,7 @@ public slots:
 Q_SIGNALS:
      void statusChanged(QWebScraperStatus::Status status);
      void ctxChanged(QJsonObject jsonObject);
+     void actionsChanged();
 private:
     QNetworkReply *doHttpRequest(HttpRequestModel requestObj);
     QString fromByteArrayToString(QByteArray html);
