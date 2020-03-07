@@ -70,7 +70,7 @@ Item {
             id: userLabel
             color: "green"
             text: "You are now logged in"
-            visible: {console.log(scraper.actions[1].valid); return scraper.actions[1].valid}
+            visible: scraper.actions[1].valid
         }
     }
 
