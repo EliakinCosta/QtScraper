@@ -11,6 +11,7 @@ Item {
 
     QWebScraper {
         id: scraper
+        keepAlive: true
         actions: [
             QWebScraperAction {
                 endpoint: "https://www.fifaindex.com/accounts/login/"
@@ -35,8 +36,26 @@ Item {
                     "query": "/html/body/main/div/script/string()"
                 }
             }
+        ]        
+    }
+
+    QWebScraper {
+        id: scraperCache
+        actions: [
+            QWebScraperAction {
+                endpoint: "https://www.fifaindex.com/"
+                scraps: [
+                    {
+                        "name": "username",
+                        "query": "/html/body/main/div/script/string()"
+                    }
+                ]
+            }
         ]
-        Component.onCompleted: console.log(scraper.actions[1].valid)
+        onStatusChanged: {
+            if (scraperCache.status === QWebScraperStatus.Ready)
+                console.log(JSON.stringify(scraperCache.ctx))
+        }
     }
 
     Column {
@@ -64,6 +83,12 @@ Item {
                 text: userLabel.visible ? "OK" : "Login"
                 onClicked: scraper.scrap()
             }
+
+            Button {
+                id: cacheButton
+                text: "Load Cookies"
+                onClicked: scraperCache.scrap()
+            }
         }
 
         Label {
@@ -79,6 +104,6 @@ Item {
         width: 150
         height: 150
         anchors.centerIn: parent
-        running: scraper.status === QWebScraperStatus.Loading
+        running: scraper.status === QWebScraperStatus.Loading || scraperCache.status === QWebScraperStatus.Loading
     }
 }
