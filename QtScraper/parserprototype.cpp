@@ -29,5 +29,6 @@ ParserPrototype *ParserPrototype::create(QWebScraperResponseParser::Type type, Q
     if(PROTOTYPES.contains(type))
     {
         return PROTOTYPES[type]->clone(jsonObj);
-    }    
+    }
+    return nullptr;
 }

@@ -4,12 +4,12 @@
 #include <QXmlQuery>
 #include <QXmlResultItems>
 
-DefaultResponseParser::DefaultResponseParser(QObject *parent)
+DefaultResponseParser::DefaultResponseParser(QObject *parent):IQWebScraperReponseParser(parent)
 {
 
 }
 
-DefaultResponseParser::DefaultResponseParser(QJsonObject jsonObject, QObject *parent)
+DefaultResponseParser::DefaultResponseParser(QJsonObject jsonObject, QObject *parent):IQWebScraperReponseParser(parent)
 {
     this->m_name = jsonObject.value("name").toString();
     this->m_query = jsonObject.value("query").toString();    

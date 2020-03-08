@@ -5,12 +5,12 @@
 #include <QXmlResultItems>
 #include <QListIterator>
 
-TableResponseParser::TableResponseParser(QObject *parent)
+TableResponseParser::TableResponseParser(QObject *parent):IQWebScraperReponseParser(parent)
 {
 
 }
 
-TableResponseParser::TableResponseParser(QJsonObject jsonObject, QObject *parent)
+TableResponseParser::TableResponseParser(QJsonObject jsonObject, QObject *parent):IQWebScraperReponseParser(parent)
 {
     this->m_name = jsonObject.value("name").toString();
     this->m_query = jsonObject.value("query").toString();
