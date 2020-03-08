@@ -23,6 +23,7 @@ class QWebScraper : public QObject
     Q_PROPERTY(QQmlListProperty<QWebScraperAction> actions READ actions NOTIFY actionsChanged)
     Q_PROPERTY(QJsonObject ctx READ ctx NOTIFY ctxChanged)
     Q_PROPERTY(QWebScraperStatus::Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(bool keepAlive READ keepAlive WRITE setKeepAlive)
 public:
     explicit QWebScraper(QObject *parent = nullptr);
     virtual ~QWebScraper();
@@ -36,6 +37,9 @@ public:
     QJsonObject ctx() const;
 
     QWebScraperStatus::Status status() const;
+
+    bool keepAlive() const;
+    void setKeepAlive(const bool keepAlive);
 
     Q_INVOKABLE void scrap();
 
@@ -51,6 +55,7 @@ private:
 
     QVector<QWebScraperAction *> m_actions;
     QScrapEngine m_scrapEngine;
+    bool m_keepAlive;
 };
 
 #endif // QWEBSCRAPER_H

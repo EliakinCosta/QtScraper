@@ -9,6 +9,7 @@
 #include <QRegularExpression>
 #include <QStringLiteral>
 #include <QUrlQuery>
+#include <QSettings>
 
 #include <tidy.h>
 #include <tidybuffio.h>
@@ -76,9 +77,11 @@ QString QScrapEngine::parseBaseUrl(QString endpoint)
     return baseUrl;
 }
 
-void QScrapEngine::parseRequests(QVector<QWebScraperAction*> actions)
+void QScrapEngine::parseRequests(QVector<QWebScraperAction*> actions, bool keepAlive)
 {
     m_actions = actions;
+    m_keepAlive = keepAlive;
+    loadCookieJar();
     ParserPrototype::initialize();
 
     foreach(QWebScraperAction *action, m_actions)
@@ -112,10 +115,11 @@ void QScrapEngine::parseRequests(QVector<QWebScraperAction*> actions)
 
 
 void QScrapEngine::scrap()
-{
+{    
     if (m_requestsSchedule.size() == 0 || m_requestScheduleIndex >= m_requestsSchedule.size())
     {
         qDebug() << QScrapEngine::CONTEXT;
+        saveCookiejar();
         setStatus(QWebScraperStatus::Ready);
         return;
     }
@@ -142,8 +146,8 @@ QNetworkReply *QScrapEngine::doHttpRequest(HttpRequestModel requestObj)
     foreach(QString key, requestObj.headers().keys())
         m_request.setRawHeader(key.toUtf8(), requestObj.headers().value(key).toString().toUtf8());
 
-    m_request.setUrl(endpoint);
-    if(httpMethod ==  "GET") {
+    m_request.setUrl(endpoint);    
+    if(httpMethod ==  "GET") {        
         return m_manager.get(m_request);
     } else if (httpMethod ==  "POST"){
         QByteArray body = parseRequestBody(requestObj.body());
@@ -263,7 +267,7 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
     }
 
     m_requestScheduleIndex++;
-    m_currentActionIndex++;
+    m_currentActionIndex++;    
     scrap();
 }
 
@@ -294,4 +298,29 @@ QByteArray QScrapEngine::parseRequestBody(QJsonArray body)
         }
     }
     return query.toString(QUrl::FullyEncoded).toUtf8();
+}
+
+void QScrapEngine::loadCookieJar()
+{
+    QSettings settings;
+    QByteArray data = settings.value("Cookies").toByteArray();
+    qDebug() << "load" << data;
+    m_cookieJar = new MyCookieJar;
+    m_cookieJar->setNewCookies(QNetworkCookie::parseCookies(data));
+    m_manager.setCookieJar(m_cookieJar);
+}
+
+void QScrapEngine::saveCookiejar()
+{
+    if (m_keepAlive) {
+        QList<QNetworkCookie> list = m_cookieJar->getAllCookies();
+        QByteArray data;
+        foreach (QNetworkCookie cookie, list) {
+                data.append(cookie.toRawForm());
+                data.append("\n");
+        }
+        qDebug() << "save" << data;
+        QSettings settings;
+        settings.setValue("Cookies",data);
+    }
 }

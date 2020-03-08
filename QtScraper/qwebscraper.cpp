@@ -12,7 +12,7 @@
 #include "qwebscraperstatus.h"
 
 QWebScraper::QWebScraper(QObject *parent) :
-    QObject{parent}, m_actions({})
+    QObject{parent}, m_actions({}), m_keepAlive(false)
 {
     connect(&m_scrapEngine, &QScrapEngine::statusChanged, this, &QWebScraper::statusChanged);
     connect(&m_scrapEngine, &QScrapEngine::ctxChanged, this, &QWebScraper::ctxChanged);    
@@ -81,8 +81,18 @@ QWebScraperStatus::Status QWebScraper::status() const
     return m_scrapEngine.status();
 }
 
+bool QWebScraper::keepAlive() const
+{
+    return m_keepAlive;
+}
+
+void QWebScraper::setKeepAlive(const bool keepAlive)
+{
+    m_keepAlive = keepAlive;
+}
+
 void QWebScraper::scrap()
 {
-    m_scrapEngine.parseRequests(m_actions);
+    m_scrapEngine.parseRequests(m_actions, m_keepAlive);
     m_scrapEngine.scrap();
 }

@@ -5,6 +5,8 @@
 #include <QJsonObject>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
+#include <QNetworkCookie>
+#include <QNetworkCookieJar>
 
 #include "qwebscraperresponseparser.h"
 #include "qwebscraperstatus.h"
@@ -14,6 +16,13 @@ class QByteArray;
 class QNetworkReply;
 class QJsonArray;
 class HttpRequestModel;
+
+class MyCookieJar : public QNetworkCookieJar
+{
+    public:
+        QList<QNetworkCookie> getAllCookies() { return allCookies(); }
+        void setNewCookies(QList<QNetworkCookie> cookies) { setAllCookies(cookies); }
+};
 
 class ScrapReply : public QObject
 {
@@ -35,7 +44,7 @@ public:
     explicit QScrapEngine(QObject *parent = nullptr);
     virtual ~QScrapEngine();
     void scrap();
-    void parseRequests(QVector<QWebScraperAction*> actions);
+    void parseRequests(QVector<QWebScraperAction*> actions, bool keepAlive);
     void setBaseUrl(QString baseUrl);
     void addRequest(HttpRequestModel requestObj);
     QString evaluateStringToContext(QString value);
@@ -58,8 +67,11 @@ private:
     QJsonObject objectFromString(const QString& in);    
     QByteArray parseRequestBody(QJsonArray body);
     QString parseBaseUrl(QString endpoint);
+    void saveCookiejar();
+    void loadCookieJar();
 private:
     QNetworkAccessManager m_manager;
+    MyCookieJar *m_cookieJar;
     QNetworkRequest m_request;
     QList<HttpRequestModel> m_requestsSchedule;
     QVector<QWebScraperAction*> m_actions;
@@ -67,7 +79,7 @@ private:
     int m_requestScheduleIndex = 0;
     int m_currentActionIndex = 0;
     QWebScraperStatus::Status m_status;
-
+    bool m_keepAlive;
 };
 
 #endif // QSCRAPENGINE_H
