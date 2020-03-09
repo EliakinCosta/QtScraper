@@ -44,10 +44,12 @@ public:
     explicit QScrapEngine(QObject *parent = nullptr);
     virtual ~QScrapEngine();
     void scrap();
+    void clearCookieSettings();
     void parseRequests(QVector<QWebScraperAction*> actions, bool keepAlive);
     void setBaseUrl(QString baseUrl);
     void addRequest(HttpRequestModel requestObj);
     QString evaluateStringToContext(QString value);
+
     static void tidyPayload(QString &payload);
     static QJsonObject CONTEXT;
 

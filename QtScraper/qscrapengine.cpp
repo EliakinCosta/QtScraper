@@ -130,6 +130,13 @@ void QScrapEngine::scrap()
     setStatus(QWebScraperStatus::Loading);
 }
 
+void QScrapEngine::clearCookieSettings()
+{
+    QSettings settings;
+    settings.remove("Cookies");
+    settings.sync();
+}
+
 void QScrapEngine::addRequest(HttpRequestModel requestObj)
 {
     m_requestsSchedule.append(requestObj);
@@ -321,6 +328,6 @@ void QScrapEngine::saveCookiejar()
         }
         qDebug() << "save" << data;
         QSettings settings;
-        settings.setValue("Cookies",data);
+        settings.setValue("Cookies", data);
     }
 }

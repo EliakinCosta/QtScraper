@@ -96,3 +96,8 @@ void QWebScraper::scrap()
     m_scrapEngine.parseRequests(m_actions, m_keepAlive);
     m_scrapEngine.scrap();
 }
+
+void QWebScraper::clearCookies()
+{
+    m_scrapEngine.clearCookieSettings();
+}

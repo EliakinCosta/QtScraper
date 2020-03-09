@@ -42,6 +42,7 @@ public:
     void setKeepAlive(const bool keepAlive);
 
     Q_INVOKABLE void scrap();
+    Q_INVOKABLE void clearCookies();
 
 Q_SIGNALS:
     void statusChanged(QWebScraperStatus::Status);
