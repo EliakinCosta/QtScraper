@@ -132,6 +132,8 @@ void QScrapEngine::scrap()
 
 void QScrapEngine::clearCookieSettings()
 {
+    m_cookieJar = new MyCookieJar;
+    m_manager.setCookieJar(m_cookieJar);
     QSettings settings;
     settings.remove("Cookies");
     settings.sync();
