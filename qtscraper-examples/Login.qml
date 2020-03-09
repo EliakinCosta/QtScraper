@@ -36,7 +36,7 @@ Item {
                     "query": "/html/body/main/div/script/string()"
                 }
             }
-        ]        
+        ]
     }
 
     QWebScraper {
@@ -81,7 +81,10 @@ Item {
             Button {
                 id: loginButton
                 text: userLabel.visible ? "OK" : "Login"
-                onClicked: scraper.scrap()
+                onClicked: {
+                    scraper.clearCookies();
+                    scraper.scrap();
+                }
             }
 
             Button {
