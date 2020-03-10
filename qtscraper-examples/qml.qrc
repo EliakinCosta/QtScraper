@@ -4,5 +4,6 @@
         <file>QueryParameters.qml</file>
         <file>ListElements.qml</file>
         <file>Login.qml</file>
+        <file>AuthenticatedRequests.qml</file>
     </qresource>
 </RCC>
