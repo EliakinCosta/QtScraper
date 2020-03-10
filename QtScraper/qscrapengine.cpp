@@ -10,7 +10,6 @@
 #include <QStringLiteral>
 #include <QUrlQuery>
 #include <QSettings>
-#include <QQmlApplicationEngine>
 
 #include <tidy.h>
 #include <tidybuffio.h>
@@ -41,10 +40,6 @@ QScrapEngine::QScrapEngine(QObject *parent) : QObject(parent)
     conf.setPeerVerifyMode(QSslSocket::VerifyNone);
 
     m_request.setSslConfiguration(conf);
-
-    QObject::connect(&m_manager, &QNetworkAccessManager::finished,
-                     this, &QScrapEngine::replyFinished);
-
 }
 
 QScrapEngine::~QScrapEngine()
@@ -127,14 +122,19 @@ void QScrapEngine::scrap()
 
     auto requestObj = m_requestsSchedule.at(m_requestScheduleIndex);
 
-    doHttpRequest(requestObj);
+    auto reply = doHttpRequest(requestObj);
     setStatus(QWebScraperStatus::Loading);
+
+    QObject::connect(
+        reply, &QNetworkReply::finished,
+        this, &QScrapEngine::replyFinished
+    );
 }
 
 void QScrapEngine::clearCookieSettings()
 {
     m_cookieJar = new MyCookieJar;
-    m_manager.setCookieJar(m_cookieJar);
+    QNAMSingleton::getQNAM()->setCookieJar(m_cookieJar);
     QSettings settings;
     settings.remove("Cookies");
     settings.sync();
@@ -158,11 +158,11 @@ QNetworkReply *QScrapEngine::doHttpRequest(HttpRequestModel requestObj)
 
     m_request.setUrl(endpoint);    
     if(httpMethod ==  "GET") {        
-        return m_manager.get(m_request);
+        return QNAMSingleton::getQNAM()->get(m_request);
     } else if (httpMethod ==  "POST"){
         QByteArray body = parseRequestBody(requestObj.body());
         qDebug() << body;
-        return m_manager.post(m_request, body);
+        return  QNAMSingleton::getQNAM()->post(m_request, body);
     }
 
     return nullptr;
@@ -234,8 +234,12 @@ void QScrapEngine::setBaseUrl(QString baseUrl)
     m_baseUrl = baseUrl;
 }
 
-void QScrapEngine::replyFinished(QNetworkReply *reply)
+void QScrapEngine::replyFinished()
 {
+    QNetworkReply * reply = qobject_cast<QNetworkReply *>(sender());
+    if (!reply)
+        return
+
     reply->deleteLater();
 
     auto requestObj = m_requestsSchedule.at(m_requestScheduleIndex);
@@ -317,7 +321,7 @@ void QScrapEngine::loadCookieJar()
     qDebug() << "load" << data;
     m_cookieJar = new MyCookieJar;
     m_cookieJar->setNewCookies(QNetworkCookie::parseCookies(data));
-    m_manager.setCookieJar(m_cookieJar);
+    QNAMSingleton::getQNAM()->setCookieJar(m_cookieJar);
 }
 
 void QScrapEngine::saveCookiejar()

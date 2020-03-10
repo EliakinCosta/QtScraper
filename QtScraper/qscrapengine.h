@@ -11,6 +11,7 @@
 #include "qwebscraperresponseparser.h"
 #include "qwebscraperstatus.h"
 #include "qwebscraperaction.h"
+#include "qnamsingleton.h"
 
 class QByteArray;
 class QNetworkReply;
@@ -56,7 +57,7 @@ public:
     QWebScraperStatus::Status status() const;
     void setStatus(QWebScraperStatus::Status status);
 public slots:
-    void replyFinished(QNetworkReply *reply);
+    void replyFinished();
 Q_SIGNALS:
      void statusChanged(QWebScraperStatus::Status status);
      void ctxChanged(QJsonObject jsonObject);
@@ -71,8 +72,7 @@ private:
     QString parseBaseUrl(QString endpoint);
     void saveCookiejar();
     void loadCookieJar();
-private:
-    QNetworkAccessManager m_manager;
+private:    
     MyCookieJar *m_cookieJar;
     QNetworkRequest m_request;
     QList<HttpRequestModel> m_requestsSchedule;
@@ -82,6 +82,7 @@ private:
     int m_currentActionIndex = 0;
     QWebScraperStatus::Status m_status;
     bool m_keepAlive;
+    QNAMSingleton m_manager;
 };
 
 #endif // QSCRAPENGINE_H
