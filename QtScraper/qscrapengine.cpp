@@ -10,6 +10,7 @@
 #include <QStringLiteral>
 #include <QUrlQuery>
 #include <QSettings>
+#include <QQmlApplicationEngine>
 
 #include <tidy.h>
 #include <tidybuffio.h>
@@ -141,7 +142,7 @@ void QScrapEngine::clearCookieSettings()
 
 void QScrapEngine::addRequest(HttpRequestModel requestObj)
 {
-    m_requestsSchedule.append(requestObj);
+    m_requestsSchedule.insert(m_requestScheduleIndex+1, requestObj);
 }
 
 QNetworkReply *QScrapEngine::doHttpRequest(HttpRequestModel requestObj)
@@ -263,7 +264,7 @@ void QScrapEngine::replyFinished(QNetworkReply *reply)
         return;
     }
     QString payload {reply->readAll()}; // clazy:exclude=qt4-qstring-from-array
-    tidyPayload(payload);
+    tidyPayload(payload);    
 
     auto currentAction = m_actions.at(m_currentActionIndex);
     auto model = currentAction->parseScraps(payload);
