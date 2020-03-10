@@ -4,19 +4,16 @@ import QtQuick.Controls 2.13
 import com.ifba.edu.scraping 1.0
 
 Item {
-    id: itemQueryParameters
-    property var playerObj
+    id: itemQueryParameters    
 
     anchors.fill: parent
 
     QWebScraper {
         id: scraper
-        url: "https://www.fifaindex.com/"
         actions: [
-            {
-                "endpoint": "https://www.fifaindex.com/players/?name=" + searchArea.text + "&order=desc",
-                "method": "GET",
-                "scraps": [
+            QWebScraperAction {
+                endpoint: "https://www.fifaindex.com/players/?name=" + searchArea.text + "&order=desc"
+                scraps: [
                     {
                         "name": "name",
                         "query": "/html/body/main/div/div[2]/div[2]/div[2]/table/tbody/tr[3]/td[4]/a/string()"
@@ -24,11 +21,6 @@ Item {
                 ]
             }
         ]
-        onStatusChanged: {
-            if (scraper.status === QWebScraperStatus.Ready) {
-                itemQueryParameters.playerObj = scraper.ctx
-            }
-        }
     }
 
     Column {
@@ -53,7 +45,7 @@ Item {
         }
 
         Label {
-            text: playerObj ? playerObj.name[0] : "Not found!"
+            text: scraper.ctx["name"] && scraper.ctx["name"][0] ? scraper.ctx["name"][0] : "Not found!"
         }
     }
 
