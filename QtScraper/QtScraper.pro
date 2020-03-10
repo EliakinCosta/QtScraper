@@ -14,6 +14,7 @@ SOURCES += \
         httprequestmodel.cpp \
         iqwebscraperresponseparser.cpp \
         parserprototype.cpp \
+        qnamsingleton.cpp \
         qscrapengine.cpp \
         qtscraper_plugin.cpp \
         qwebscraper.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
         httprequestmodel.h \
         iqwebscraperresponseparser.h \
         parserprototype.h \
+        qnamsingleton.h \
         qscrapengine.h \
         qtscraper_plugin.h \
         qwebscraper.h \
