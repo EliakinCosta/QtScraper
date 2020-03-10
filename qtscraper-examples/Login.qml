@@ -17,7 +17,7 @@ Item {
                 endpoint: "https://www.fifaindex.com/accounts/login/"
                 scraps: [
                     {
-                        "name": "token",
+                        "name": "token",                        
                         "query": "/html/body/main/div/div[2]/div/div/div/form/input/@value/string()"
                     }
                 ]
@@ -91,6 +91,12 @@ Item {
                 id: cacheButton
                 text: "Load Cookies"
                 onClicked: scraperCache.scrap()
+            }
+
+            Button {
+                id: clearButton
+                text: "Clear Cookies"
+                onClicked: scraperCache.clearCookies()
             }
         }
 
