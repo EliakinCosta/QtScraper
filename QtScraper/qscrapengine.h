@@ -70,6 +70,7 @@ private:
     QJsonObject objectFromString(const QString& in);    
     QByteArray parseRequestBody(QJsonArray body);
     QString parseBaseUrl(QString endpoint);
+    void resetSchedule();
     void saveCookiejar();
     void loadCookieJar();
 private:    

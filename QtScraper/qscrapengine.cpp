@@ -29,7 +29,7 @@ ScrapReply::ScrapReply(QObject *parent)
 
 QScrapEngine::QScrapEngine(QObject *parent) : QObject(parent)
 {
-    m_request.setHeader(
+        m_request.setHeader(
                 QNetworkRequest::ContentTypeHeader,
                 QStringLiteral("application/x-www-form-urlencoded")
                 );
@@ -116,6 +116,7 @@ void QScrapEngine::scrap()
     {
         qDebug() << QScrapEngine::CONTEXT;
         saveCookiejar();
+        resetSchedule();
         setStatus(QWebScraperStatus::Ready);
         return;
     }
@@ -138,6 +139,14 @@ void QScrapEngine::clearCookieSettings()
     QSettings settings;
     settings.remove("Cookies");
     settings.sync();
+}
+
+void QScrapEngine::resetSchedule()
+{
+    m_requestsSchedule.clear();
+    m_currentActionIndex = 0;
+    m_requestScheduleIndex = 0;
+    m_baseUrl = "";
 }
 
 void QScrapEngine::addRequest(HttpRequestModel requestObj)
