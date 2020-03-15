@@ -3,6 +3,7 @@
 
 #include <QJsonObject>
 #include <QObject>
+#include <QVariantMap>
 
 #include "iqwebscraperresponseparser.h"
 #include "parserprototype.h"
@@ -22,6 +23,7 @@ private:
     QString m_query;
     QList<int> m_indexes;
     QList<QString> m_headers;
+    QVariantMap m_customQueries;
 };
 
 #endif // TABLERESPONSEPARSER_H

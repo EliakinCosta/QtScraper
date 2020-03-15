@@ -26,6 +26,13 @@ TableResponseParser::TableResponseParser(QJsonObject jsonObject, QObject *parent
         if (iter->isString())
         {
             QString jsonStr = iter->toString();
+            if (jsonStr.indexOf(",") != -1)
+            {
+                auto strList = jsonStr.split(",");
+                jsonStr = strList.first();
+                m_customQueries.insert(jsonStr, strList.last());
+            }
+
             this->m_headers.append(jsonStr);
         }
     }
@@ -53,7 +60,10 @@ QJsonArray TableResponseParser::parse(QString response)
     for (int index = 0; index < m_indexes.size(); index++)
     {
         int tableIndex = m_indexes[index];
+
         QString index_query = QString(m_query).replace("$index", QString::number(tableIndex));
+        if (m_customQueries.contains(m_headers[index]))
+                index_query = m_customQueries.value(m_headers[index]).toString();
         xmlQuery.setQuery(index_query);
 
         if (!xmlQuery.isValid()) {
