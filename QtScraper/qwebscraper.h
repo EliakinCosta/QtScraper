@@ -24,6 +24,7 @@ class QWebScraper : public QObject
     Q_PROPERTY(QJsonObject ctx READ ctx NOTIFY ctxChanged)
     Q_PROPERTY(QWebScraperStatus::Status status READ status NOTIFY statusChanged)
     Q_PROPERTY(bool keepAlive READ keepAlive WRITE setKeepAlive)
+    Q_PROPERTY(QJsonArray cookies READ cookies WRITE setCookies)
 public:
     explicit QWebScraper(QObject *parent = nullptr);
     virtual ~QWebScraper();
@@ -40,6 +41,9 @@ public:
 
     bool keepAlive() const;
     void setKeepAlive(const bool keepAlive);
+
+    QJsonArray cookies() const;
+    void setCookies(QJsonArray cookies);
 
     Q_INVOKABLE void scrap();
     Q_INVOKABLE void clearCookies();

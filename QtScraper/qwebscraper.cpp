@@ -91,6 +91,16 @@ void QWebScraper::setKeepAlive(const bool keepAlive)
     m_keepAlive = keepAlive;
 }
 
+QJsonArray QWebScraper::cookies() const
+{
+    return m_scrapEngine.cookies();
+}
+
+void QWebScraper::setCookies(QJsonArray cookies)
+{
+    m_scrapEngine.setCookies(cookies);
+}
+
 void QWebScraper::scrap()
 {
     m_scrapEngine.parseRequests(m_actions, m_keepAlive);

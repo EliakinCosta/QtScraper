@@ -56,6 +56,9 @@ public:
 
     QWebScraperStatus::Status status() const;
     void setStatus(QWebScraperStatus::Status status);
+
+    QJsonArray cookies() const;
+    void setCookies(QJsonArray cookies);
 public slots:
     void replyFinished();
 Q_SIGNALS:
@@ -84,6 +87,7 @@ private:
     QWebScraperStatus::Status m_status;
     bool m_keepAlive;
     QNAMSingleton m_manager;
+    QJsonArray m_cookies;
 };
 
 #endif // QSCRAPENGINE_H

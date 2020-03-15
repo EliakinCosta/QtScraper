@@ -29,10 +29,10 @@ ScrapReply::ScrapReply(QObject *parent)
 
 QScrapEngine::QScrapEngine(QObject *parent) : QObject(parent)
 {
-        m_request.setHeader(
-                QNetworkRequest::ContentTypeHeader,
-                QStringLiteral("application/x-www-form-urlencoded")
-                );
+    m_request.setHeader(
+        QNetworkRequest::ContentTypeHeader,
+        QStringLiteral("application/x-www-form-urlencoded")
+    );
 
     m_request.setRawHeader( "User-Agent" , "Mozilla Firefox" );
 
@@ -339,11 +339,39 @@ void QScrapEngine::saveCookiejar()
         QList<QNetworkCookie> list = m_cookieJar->getAllCookies();
         QByteArray data;
         foreach (QNetworkCookie cookie, list) {
-                data.append(cookie.toRawForm());
-                data.append("\n");
+            data.append(cookie.toRawForm());
+            data.append("\n");
         }
         qDebug() << "save" << data;
         QSettings settings;
         settings.setValue("Cookies", data);
     }
 }
+
+QJsonArray QScrapEngine::cookies() const
+{
+    return m_cookies;
+}
+
+void QScrapEngine::setCookies(QJsonArray cookies)
+{
+    if (cookies.isEmpty())
+        return;
+
+    m_cookies = cookies;
+    m_cookieJar = new MyCookieJar;
+    for (const auto cookie: cookies) {
+        QString name = cookie.toObject().value("name").toString();
+        QString value = cookie.toObject().value("value").toString();
+        QString domain = cookie.toObject().value("domain").toString();
+        QString path = cookie.toObject().value("path").toString();
+
+        QNetworkCookie newCookieObject(name.toLatin1(), value.toLatin1());
+        newCookieObject.setDomain(domain);
+        newCookieObject.setPath(path);
+        m_cookieJar->insertCookie(newCookieObject);
+    }
+    QNAMSingleton::getQNAM()->setCookieJar(m_cookieJar);
+    saveCookiejar();
+}
+
