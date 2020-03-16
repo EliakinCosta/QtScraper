@@ -66,14 +66,16 @@ QJsonArray TableResponseParser::parse(QString response)
                 index_query = m_customQueries.value(m_headers[index]).toString();
         xmlQuery.setQuery(index_query);
 
-        if (!xmlQuery.isValid()) {
-            return QJsonArray();
-        }
-
         QStringList list;
-        xmlQuery.evaluateTo(&list);
-        rawTable.insert(m_headers[index], list);
-        listSize = list.size();
+
+        if (xmlQuery.isValid()) {
+            xmlQuery.evaluateTo(&list);
+            if (list.size() > 0)
+            {
+                rawTable.insert(m_headers[index], list);
+                listSize = list.size();
+            }
+        }        
     }
 
     for (int index = 0; index < listSize; index++)
