@@ -6,7 +6,6 @@ import com.ifba.edu.scraping 1.0
 Item {
     id: itemListElements
     anchors.fill: parent
-    property var topPlayers: []    
 
     QWebScraper {
         id: scraper
