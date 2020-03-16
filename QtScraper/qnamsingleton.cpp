@@ -2,9 +2,7 @@
 
 QNetworkAccessManager* QNAMSingleton::m_qnam = Q_NULLPTR;
 
-QNAMSingleton::QNAMSingleton(){
-    if(!m_qnam)
-        m_qnam=new QNetworkAccessManager;
+QNAMSingleton::QNAMSingleton(){    
 }
 
 QNAMSingleton::~QNAMSingleton()
@@ -15,5 +13,7 @@ QNAMSingleton::~QNAMSingleton()
 
 QNetworkAccessManager* QNAMSingleton::getQNAM()
 {
+    if(!m_qnam)
+        m_qnam=new QNetworkAccessManager;
     return m_qnam;
 }
