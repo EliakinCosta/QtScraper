@@ -113,8 +113,7 @@ void QScrapEngine::parseRequests(QVector<QWebScraperAction*> actions, bool keepA
 void QScrapEngine::scrap()
 {    
     if (m_requestsSchedule.size() == 0 || m_requestScheduleIndex >= m_requestsSchedule.size())
-    {
-        qDebug() << QScrapEngine::CONTEXT;
+    {        
         saveCookiejar();
         resetSchedule();
         setStatus(QWebScraperStatus::Ready);
@@ -169,8 +168,7 @@ QNetworkReply *QScrapEngine::doHttpRequest(HttpRequestModel requestObj)
     if(httpMethod ==  "GET") {        
         return QNAMSingleton::getQNAM()->get(m_request);
     } else if (httpMethod ==  "POST"){
-        QByteArray body = parseRequestBody(requestObj.body());
-        qDebug() << body;
+        QByteArray body = parseRequestBody(requestObj.body());        
         return  QNAMSingleton::getQNAM()->post(m_request, body);
     }
 
@@ -190,8 +188,7 @@ void QScrapEngine::saveToContext(QJsonObject jsonObject)
 
 void QScrapEngine::saveToContext(QString key, QJsonArray jsonArray)
 {
-    QScrapEngine::CONTEXT.insert(key, jsonArray);
-    qDebug() << QScrapEngine::CONTEXT;
+    QScrapEngine::CONTEXT.insert(key, jsonArray);    
     Q_EMIT ctxChanged(QScrapEngine::CONTEXT);
 }
 
@@ -207,8 +204,7 @@ QString QScrapEngine::evaluateStringToContext(QString value)
         QString templateValue = QScrapEngine::CONTEXT.value(templateKey).toArray().first().toString();
 
         new_value = value.replace(QString("%%%1%%").arg(templateKey), templateValue);
-    }
-    qDebug() << new_value;
+    }    
     return new_value;
 }
 
@@ -266,8 +262,7 @@ void QScrapEngine::replyFinished()
 
     if(statusCode == 302)
     {
-        QUrl newUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
-        qDebug() << "redirected to " + newUrl.toString();
+        QUrl newUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();        
 
         auto httpRequestModel = HttpRequestModel(newUrl.toString(), "GET", {});
         this->addRequest(httpRequestModel);
@@ -326,8 +321,7 @@ QByteArray QScrapEngine::parseRequestBody(QJsonArray body)
 void QScrapEngine::loadCookieJar()
 {
     QSettings settings;
-    QByteArray data = settings.value("Cookies").toByteArray();
-    qDebug() << "load" << data;
+    QByteArray data = settings.value("Cookies").toByteArray();    
     m_cookieJar = new MyCookieJar;
     m_cookieJar->setNewCookies(QNetworkCookie::parseCookies(data));
     QNAMSingleton::getQNAM()->setCookieJar(m_cookieJar);
@@ -341,8 +335,7 @@ void QScrapEngine::saveCookiejar()
         foreach (QNetworkCookie cookie, list) {
             data.append(cookie.toRawForm());
             data.append("\n");
-        }
-        qDebug() << "save" << data;
+        }        
         QSettings settings;
         settings.setValue("Cookies", data);
     }
